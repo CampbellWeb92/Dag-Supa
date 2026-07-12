@@ -1,0 +1,21 @@
+DAG WEBSITE — START HERE
+
+1. Upload the CONTENTS of this folder to your website's public/root folder.
+   index.html and the assets folder must stay next to each other.
+
+2. In Supabase, open SQL Editor and run:
+   supabase/schema.sql
+
+3. In Supabase Authentication > URL Configuration, add your live website URL
+   and add these redirect URLs:
+   https://YOUR-DOMAIN/login.html
+   https://YOUR-DOMAIN/update-password.html
+
+4. The Supabase project API URL has been corrected in:
+   assets/supabase-config.js
+
+5. New breeder profiles and dog listings start as "pending".
+   Approve them in Supabase Table Editor by changing approval_status to approved.
+
+Important: test through a web server or hosting platform. Do not test module-based pages
+by double-clicking the HTML files, because browsers may block JavaScript modules on file:// URLs.

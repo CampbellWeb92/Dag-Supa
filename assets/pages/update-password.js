@@ -1,9 +1,14 @@
-import { setButtonLoading, showMessage, supabase } from "../auth.js";
+import { isConfigured, setButtonLoading, showMessage, supabase } from "../auth.js";
 
 const form = document.querySelector("#passwordForm");
 const message = document.querySelector("#message");
 
-form.addEventListener("submit", async (event) => {
+form?.addEventListener("submit", async (event) => {
+  if (!isConfigured || !supabase) {
+    event.preventDefault();
+    showMessage(message, "Connect Supabase first using SETUP-GUIDE.txt.", "error");
+    return;
+  }
   event.preventDefault();
 
   const password = form.elements.password.value;

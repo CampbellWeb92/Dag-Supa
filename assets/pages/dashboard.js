@@ -12,6 +12,7 @@ const profileStatus = document.querySelector("#profileStatus");
 const dogCount = document.querySelector("#dogCount");
 const availableCount = document.querySelector("#availableCount");
 const dogList = document.querySelector("#dogList");
+const bidList = document.querySelector("#bidList");
 const message = document.querySelector("#message");
 const logoutButton = document.querySelector("#logout");
 

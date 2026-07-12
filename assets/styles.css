@@ -857,3 +857,20 @@ textarea:focus {
     font-size: 1.45rem;
   }
 }
+
+/* Shared form and accessibility finishing touches */
+select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cbd8e1;
+  border-radius: 10px;
+  color: var(--black);
+  background: var(--white);
+}
+select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(22, 119, 200, 0.35);
+  outline-offset: 3px;
+}
+[hidden] { display: none !important; }
