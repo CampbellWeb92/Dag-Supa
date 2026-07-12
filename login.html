@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Breeder Login | Dag</title>
+    <link href="assets/styles.css" rel="stylesheet" />
+    <link href="assets/auth.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div data-site-header=""></div>
+    <main>
+      <section class="page-banner">
+        <div class="container">
+          <h1>Breeder Login</h1>
+          <p>Manage your breeder profile and dog listings.</p>
+        </div>
+      </section>
+      <div class="auth-shell">
+        <section class="auth-card narrow">
+          <div class="setup-warning" hidden="" id="setupWarning">
+            Supabase has not been connected yet. Follow SETUP-GUIDE.txt.
+          </div>
+          <form class="auth-form" id="loginForm">
+            <div class="field full">
+              <label for="email">Email</label
+              ><input
+                autocomplete="email"
+                id="email"
+                name="email"
+                required=""
+                type="email"
+              />
+            </div>
+            <div class="field full">
+              <label for="password">Password</label
+              ><input
+                autocomplete="current-password"
+                id="password"
+                name="password"
+                required=""
+                type="password"
+              />
+            </div>
+            <div class="full"><p class="form-message" id="message"></p></div>
+            <div class="form-actions full">
+              <button class="btn btn-primary" type="submit">Log In</button
+              ><a class="btn btn-outline" href="forgot-password.html"
+                >Forgot password?</a
+              >
+            </div>
+          </form>
+          <p class="auth-links">
+            No breeder account?
+            <a href="register.html"><strong>Register here</strong></a>
+          </p>
+        </section>
+      </div>
+    </main>
+    <div data-site-footer=""></div>
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("login");
+    </script>
+    <script src="assets/supabase-config.js"></script>
+    <script src="assets/pages/login.js" type="module"></script>
+  </body>
+</html>

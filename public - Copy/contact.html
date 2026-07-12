@@ -1,0 +1,76 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <meta content="Dag dog marketplace" name="description" />
+    <title>Contact | Dag</title>
+    <link href="assets/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div data-site-header=""></div>
+    <main>
+      <section class="page-banner">
+        <div class="container">
+          <h1>Contact Dag</h1>
+          <p>Questions about a breeder, listing, bid or payment?</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container">
+          <div class="details-grid">
+            <div class="info-box">
+              <h2>Marketplace support</h2>
+              <p>
+                <strong> Email: </strong>
+                support@dag.example
+              </p>
+              <p>
+                <strong> Phone: </strong>
+                +27 10 555 0100
+              </p>
+              <p>
+                <strong> Hours: </strong>
+                Monday–Friday, 08:30–17:00
+              </p>
+            </div>
+            <form class="info-box contact-form" id="contactForm">
+              <h2>Send a message</h2>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="name"> Name </label>
+                  <input id="name" name="name" required="" />
+                </div>
+                <div class="form-group">
+                  <label for="email"> Email </label>
+                  <input id="email" name="email" required="" type="email" />
+                </div>
+                <div class="form-group full">
+                  <label for="message"> Message </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required=""
+                    rows="5"
+                  ></textarea>
+                </div>
+                <div class="form-group full">
+                  <button class="btn btn-primary">Send Message</button>
+                </div>
+              </div>
+              <p class="notice" id="contactNotice"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer=""></div>
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("contact");
+    </script>
+    <script src="assets/script.js"></script>
+    <script src="assets/pages/contact.js"></script>
+  </body>
+</html>

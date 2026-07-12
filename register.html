@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Breeder Registration | Dag</title>
+    <link href="assets/styles.css" rel="stylesheet" />
+    <link href="assets/auth.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div data-site-header=""></div>
+    <main>
+      <section class="page-banner breeders-banner">
+        <div class="container">
+          <h1>Join Dag as a Breeder</h1>
+          <p>
+            Create your breeder account and submit your profile for approval.
+          </p>
+        </div>
+      </section>
+      <div class="auth-shell">
+        <section class="auth-card">
+          <h2 class="auth-heading">Breeder registration</h2>
+          <p class="auth-subtitle">
+            Your profile will remain pending until it has been reviewed by Dag.
+          </p>
+          <div class="setup-warning" hidden="" id="setupWarning">
+            Supabase has not been connected yet. Follow SETUP-GUIDE.txt before
+            using registration.
+          </div>
+          <form class="auth-form" id="registerForm">
+            <div class="field">
+              <label for="contactName">Contact name</label
+              ><input
+                autocomplete="name"
+                id="contactName"
+                name="contactName"
+                required=""
+              />
+            </div>
+            <div class="field">
+              <label for="businessName">Breeding business name</label
+              ><input id="businessName" name="businessName" required="" />
+            </div>
+            <div class="field">
+              <label for="email">Email</label
+              ><input
+                autocomplete="email"
+                id="email"
+                name="email"
+                required=""
+                type="email"
+              />
+            </div>
+            <div class="field">
+              <label for="phone">Phone / WhatsApp</label
+              ><input id="phone" name="phone" required="" type="tel" />
+            </div>
+            <div class="field">
+              <label for="province">Province</label
+              ><select id="province" name="province" required="">
+                <option value="">Choose province</option>
+                <option>Eastern Cape</option>
+                <option>Free State</option>
+                <option>Gauteng</option>
+                <option>KwaZulu-Natal</option>
+                <option>Limpopo</option>
+                <option>Mpumalanga</option>
+                <option>North West</option>
+                <option>Northern Cape</option>
+                <option>Western Cape</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="town">Town / City</label
+              ><input id="town" name="town" required="" />
+            </div>
+            <div class="field full">
+              <label for="breeds">Breeds</label
+              ><input
+                id="breeds"
+                name="breeds"
+                placeholder="Example: Golden Retrievers, Labradors"
+                required=""
+              />
+            </div>
+            <div class="field">
+              <label for="password">Password</label
+              ><input
+                autocomplete="new-password"
+                id="password"
+                minlength="8"
+                name="password"
+                required=""
+                type="password"
+              />
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm password</label
+              ><input
+                autocomplete="new-password"
+                id="confirmPassword"
+                minlength="8"
+                name="confirmPassword"
+                required=""
+                type="password"
+              />
+            </div>
+            <div class="field full">
+              <label
+                ><input id="terms" name="terms" required="" type="checkbox" /> I
+                agree to Dag's breeder rules, privacy policy and listing
+                terms.</label
+              >
+            </div>
+            <div class="full"><p class="form-message" id="message"></p></div>
+            <div class="form-actions full">
+              <button class="btn btn-primary" type="submit">
+                Create Breeder Account</button
+              ><a class="btn btn-outline" href="login.html"
+                >Already registered? Log in</a
+              >
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+    <div data-site-footer=""></div>
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("register");
+    </script>
+    <script src="assets/supabase-config.js"></script>
+    <script src="assets/pages/register.js" type="module"></script>
+  </body>
+</html>

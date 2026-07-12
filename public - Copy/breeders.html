@@ -1,0 +1,81 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <meta content="Dag dog marketplace" name="description" />
+    <title>Breeders | Dag</title>
+    <link href="assets/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div data-site-header=""></div>
+    <main>
+      <section class="page-banner breeders-banner">
+        <div class="container">
+          <h1>Our Breeders</h1>
+          <p>
+            Browse breeder locations, dog breeds, prices and contact details.
+          </p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container">
+          <p class="form-message" id="breederMessage"></p>
+          <div class="grid grid-3" id="breederGrid">
+            <article class="card">
+              <img
+                alt="Blue Sky Kennels"
+                src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&amp;fit=crop&amp;w=900&amp;q=80"
+              />
+              <div class="card-body">
+                <span class="badge"> Johannesburg, Gauteng </span>
+                <h2>Blue Sky Kennels</h2>
+                <p>Golden Retrievers, Labradors and Cocker Spaniels.</p>
+                <a class="btn btn-primary" href="breeder-blue-sky.html">
+                  View 6 Listings
+                </a>
+              </div>
+            </article>
+            <article class="card">
+              <img
+                alt="Green Valley Dogs"
+                src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&amp;fit=crop&amp;w=900&amp;q=80"
+              />
+              <div class="card-body">
+                <span class="badge"> Cape Town, Western Cape </span>
+                <h2>Green Valley Dogs</h2>
+                <p>French Bulldogs, Beagles and Dachshunds.</p>
+                <a class="btn btn-primary" href="breeder-green-valley.html">
+                  View 6 Listings
+                </a>
+              </div>
+            </article>
+            <article class="card">
+              <img
+                alt="Coastal Canines"
+                src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&amp;fit=crop&amp;w=900&amp;q=80"
+              />
+              <div class="card-body">
+                <span class="badge"> Durban, KwaZulu-Natal </span>
+                <h2>Coastal Canines</h2>
+                <p>German Shepherds, Border Collies and Toy Poodles.</p>
+                <a class="btn btn-primary" href="breeder-coastal.html">
+                  View 6 Listings
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer=""></div>
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("breeders");
+    </script>
+    <script src="assets/script.js"></script>
+    <script src="assets/supabase-config.js"></script>
+    <script src="assets/pages/breeders.js" type="module"></script>
+  </body>
+</html>

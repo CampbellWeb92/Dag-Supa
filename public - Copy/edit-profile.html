@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Edit Breeder Profile | Dag</title>
+    <link href="assets/styles.css" rel="stylesheet" />
+    <link href="assets/auth.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div data-site-header=""></div>
+    <main>
+      <section class="page-banner">
+        <div class="container">
+          <h1>Edit Breeder Profile</h1>
+          <p>
+            Keep your public contact details and breeder information up to date.
+          </p>
+        </div>
+      </section>
+      <div class="auth-shell">
+        <section class="auth-card">
+          <form class="auth-form" id="profileForm">
+            <div class="field">
+              <label for="contact_name">Contact name</label
+              ><input id="contact_name" name="contact_name" required="" />
+            </div>
+            <div class="field">
+              <label for="business_name">Business name</label
+              ><input id="business_name" name="business_name" required="" />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label
+              ><input id="phone" name="phone" required="" />
+            </div>
+            <div class="field">
+              <label for="whatsapp">WhatsApp</label
+              ><input id="whatsapp" name="whatsapp" />
+            </div>
+            <div class="field">
+              <label for="province">Province</label
+              ><input id="province" name="province" required="" />
+            </div>
+            <div class="field">
+              <label for="town">Town / City</label
+              ><input id="town" name="town" required="" />
+            </div>
+            <div class="field full">
+              <label for="breeds">Breeds</label
+              ><input id="breeds" name="breeds" required="" />
+            </div>
+            <div class="field full">
+              <label for="registration_number"
+                >Registration / membership number</label
+              ><input id="registration_number" name="registration_number" />
+            </div>
+            <div class="field full">
+              <label for="description">About your breeding programme</label
+              ><textarea
+                id="description"
+                maxlength="1500"
+                name="description"
+                rows="6"
+              ></textarea>
+            </div>
+            <div class="field full">
+              <label for="profileImage">Profile image or logo</label
+              ><input
+                accept="image/jpeg,image/png,image/webp"
+                id="profileImage"
+                name="profileImage"
+                type="file"
+              /><img
+                alt="Profile image preview"
+                class="image-preview"
+                id="preview"
+              />
+            </div>
+            <div class="full"><p class="form-message" id="message"></p></div>
+            <div class="form-actions full">
+              <button class="btn btn-primary">Save Profile</button
+              ><a class="btn btn-outline" href="dashboard.html">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+    <div data-site-footer=""></div>
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("dashboard");
+    </script>
+    <script src="assets/supabase-config.js"></script>
+    <script src="assets/pages/edit-profile.js" type="module"></script>
+  </body>
+</html>

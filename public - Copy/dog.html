@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="View a dog listing on Dag." />
+    <title>Dog Listing | Dag</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="stylesheet" href="assets/auth.css" />
+  </head>
+  <body>
+    <div data-site-header></div>
+
+    <main>
+      <section class="page-banner breeders-banner">
+        <div class="container">
+          <h1 id="pageTitle">Dog Listing</h1>
+          <p id="pageSubtitle">View dog information and contact the breeder.</p>
+        </div>
+      </section>
+
+      <div class="auth-shell">
+        <p id="message" class="form-message"></p>
+
+        <article id="dogContent" class="auth-card public-dog">
+          <div class="empty-state">Loading listing…</div>
+        </article>
+
+        <section class="auth-card bid-section">
+          <h2>Place a Bid</h2>
+          <p>
+            Your contact details and offer will be saved for the breeder to
+            review.
+          </p>
+
+          <form id="bidForm" class="auth-form">
+            <input type="hidden" name="dog_id" />
+            <input type="hidden" name="breeder_id" />
+
+            <div class="field">
+              <label for="buyer_name">Your name</label>
+              <input id="buyer_name" name="buyer_name" required />
+            </div>
+
+            <div class="field">
+              <label for="buyer_email">Your email</label>
+              <input
+                id="buyer_email"
+                name="buyer_email"
+                type="email"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="buyer_phone">Phone / WhatsApp</label>
+              <input id="buyer_phone" name="buyer_phone" type="tel" />
+            </div>
+
+            <div class="field">
+              <label for="amount">Bid amount (ZAR)</label>
+              <input
+                id="amount"
+                name="amount"
+                type="number"
+                min="1"
+                step="1"
+                required
+              />
+            </div>
+
+            <div class="field full">
+              <label for="bid_message">Message</label>
+              <textarea id="bid_message" name="bid_message" rows="4"></textarea>
+            </div>
+
+            <div class="full">
+              <p id="bidMessage" class="form-message"></p>
+            </div>
+
+            <div class="form-actions full">
+              <button class="btn btn-primary" type="submit">Send Bid</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <div data-site-footer></div>
+
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("breeders");
+    </script>
+    <script src="assets/supabase-config.js"></script>
+    <script type="module" src="assets/pages/dog.js"></script>
+  </body>
+</html>
