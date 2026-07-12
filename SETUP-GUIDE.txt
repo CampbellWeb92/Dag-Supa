@@ -1,0 +1,83 @@
+DAG WEBSITE — COMPLETE SETUP GUIDE
+==================================
+
+WHAT ALREADY WORKS
+------------------
+- Responsive header, footer and mobile navigation
+- Static sample breeder pages
+- Breeder registration and email/password login
+- Password reset
+- Breeder profile editing and image uploads
+- Add, edit and delete dog listings
+- Approval status for breeders and dogs
+- Automatic live breeder cards on breeders.html
+- Reusable public breeder-profile.html page
+- Reusable public dog.html page
+- Database-backed buyer bids
+
+STEP 1 — CREATE SUPABASE
+------------------------
+1. Create a Supabase project.
+2. Open SQL Editor.
+3. Paste and run the complete supabase/schema.sql file.
+4. Open Project Settings > API.
+5. Copy the Project URL and Publishable key.
+6. Paste them into assets/supabase-config.js.
+
+Never put a service_role or secret key in website files.
+
+STEP 2 — AUTHENTICATION URLS
+----------------------------
+In Supabase Authentication > URL Configuration, set your Site URL and add:
+
+  https://YOUR-DOMAIN/login.html
+  https://YOUR-DOMAIN/update-password.html
+
+For local testing also add:
+
+  http://localhost:8000/login.html
+  http://localhost:8000/update-password.html
+
+STEP 3 — TEST THROUGH A WEB SERVER
+----------------------------------
+Do not double-click the HTML files. JavaScript modules require a web server.
+
+From the Dag folder run:
+
+  python -m http.server 8000
+
+Then visit:
+
+  http://localhost:8000
+
+STEP 4 — APPROVE CONTENT
+------------------------
+New profiles and edited listings stay pending until approved.
+
+In Supabase Table Editor:
+
+  breeder_profiles > approval_status > approved
+  dogs > approval_status > approved
+
+Approved profiles automatically appear on breeders.html.
+Approved dogs automatically appear on breeder-profile.html.
+
+STEP 5 — REPLACE PLACEHOLDER CONTACT DETAILS
+--------------------------------------------
+Search the project for:
+
+  dag.example
+  +27 10 555 0100
+  REPLACE
+
+Replace these with the real Dag support details and payment details.
+
+PAYPAL / ONLINE PAYMENTS
+------------------------
+The three sample breeder pages still contain a browser-only PayPal demonstration.
+A secure real payment system cannot verify payments from static HTML alone.
+It requires a protected server endpoint and a PayPal webhook.
+
+Do not advertise automatic payment confirmation until that backend is installed.
+Registration, profiles, dog listings, image uploads and bids work through Supabase
+without a separate custom server.

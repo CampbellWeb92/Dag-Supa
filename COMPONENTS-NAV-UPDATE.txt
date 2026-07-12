@@ -1,0 +1,10 @@
+Add these links inside the navigation section in assets/components.js:
+
+${navLink('register', 'register.html', 'Register as Breeder')}
+${navLink('login', 'login.html', 'Breeder Login')}
+
+Recommended placement: directly after the Contact link.
+
+You may also add these links to the footer:
+<a href="register.html">Register as a Breeder</a>
+<a href="login.html">Breeder Login</a>

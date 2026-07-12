@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="View an approved breeder profile on Dag."
+    />
+    <title>Breeder Profile | Dag</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="stylesheet" href="assets/auth.css" />
+  </head>
+  <body>
+    <div data-site-header></div>
+
+    <main>
+      <section class="page-banner breeders-banner">
+        <div class="container">
+          <h1 id="pageTitle">Breeder Profile</h1>
+          <p id="pageSubtitle">
+            View breeder details and approved dog listings.
+          </p>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="container">
+          <p id="message" class="form-message"></p>
+          <div id="profileContent" class="profile-header">
+            <div class="empty-state">Loading breeder profile…</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title">
+            <h2>Available Dogs</h2>
+            <p>Only approved listings appear publicly.</p>
+          </div>
+          <div id="dogGrid" class="breed-grid">
+            <div class="empty-state">Loading dogs…</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div data-site-footer></div>
+
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("breeders");
+    </script>
+    <script src="assets/supabase-config.js"></script>
+    <script type="module" src="assets/pages/breeder-profile.js"></script>
+  </body>
+</html>

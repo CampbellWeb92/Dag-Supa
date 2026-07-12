@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Edit Dog | Dag</title>
+    <link href="assets/styles.css" rel="stylesheet" />
+    <link href="assets/auth.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div data-site-header=""></div>
+    <main>
+      <section class="page-banner breeders-banner">
+        <div class="container">
+          <h1>Edit Dog Listing</h1>
+          <p>
+            Create a detailed listing with accurate health and ownership
+            information.
+          </p>
+        </div>
+      </section>
+      <div class="auth-shell">
+        <section class="auth-card">
+          <form class="auth-form" id="dogForm">
+            <div class="field">
+              <label for="name">Dog name</label
+              ><input id="name" name="name" required="" />
+            </div>
+            <div class="field">
+              <label for="breed">Breed</label
+              ><input id="breed" name="breed" required="" />
+            </div>
+            <div class="field">
+              <label for="sex">Sex</label
+              ><select id="sex" name="sex" required="">
+                <option value="">Choose</option>
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="date_of_birth">Date of birth</label
+              ><input
+                id="date_of_birth"
+                name="date_of_birth"
+                required=""
+                type="date"
+              />
+            </div>
+            <div class="field">
+              <label for="colour">Colour</label
+              ><input id="colour" name="colour" required="" />
+            </div>
+            <div class="field">
+              <label for="price">Price (ZAR)</label
+              ><input
+                id="price"
+                min="0"
+                name="price"
+                required=""
+                step="1"
+                type="number"
+              />
+            </div>
+            <div class="field">
+              <label for="status">Availability</label
+              ><select id="status" name="status">
+                <option value="available">Available</option>
+                <option value="reserved">Reserved</option>
+                <option value="sold">Sold</option>
+                <option value="unavailable">Unavailable</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="registered">Registration status</label
+              ><select id="registered" name="registered">
+                <option value="false">Not registered</option>
+                <option value="true">Registered</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vaccinated">Vaccinated</label
+              ><select id="vaccinated" name="vaccinated">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="microchipped">Microchipped</label
+              ><select id="microchipped" name="microchipped">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="health_tests">Health tests and vet records</label
+              ><textarea
+                id="health_tests"
+                name="health_tests"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="field full">
+              <label for="bloodline">Parents / bloodline</label
+              ><textarea id="bloodline" name="bloodline" rows="3"></textarea>
+            </div>
+            <div class="field full">
+              <label for="description">Description</label
+              ><textarea
+                id="description"
+                maxlength="2000"
+                name="description"
+                required=""
+                rows="6"
+              ></textarea>
+            </div>
+            <div class="field full">
+              <label for="mainImage">Main image</label
+              ><input
+                accept="image/jpeg,image/png,image/webp"
+                id="mainImage"
+                name="mainImage"
+                required=""
+                type="file"
+              /><img
+                alt="Dog image preview"
+                class="image-preview"
+                id="preview"
+              />
+            </div>
+            <div class="full"><p class="form-message" id="message"></p></div>
+            <div class="form-actions full">
+              <button class="btn btn-primary">Save Dog Changes</button
+              ><a class="btn btn-outline" href="dashboard.html">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+    <div data-site-footer=""></div>
+    <script src="assets/components.js"></script>
+    <script>
+      renderLayout("dashboard");
+    </script>
+    <script src="assets/supabase-config.js"></script>
+    <script src="assets/pages/edit-dog.js" type="module"></script>
+  </body>
+</html>

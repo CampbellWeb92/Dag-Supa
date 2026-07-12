@@ -1,0 +1,83 @@
+DAG WEBSITE — EASY EDITING GUIDE
+================================
+
+MOST IMPORTANT FILES
+--------------------
+assets/styles.css
+  Main colours, spacing, cards, navigation, footer and mobile layout.
+
+assets/auth.css
+  Registration, dashboard, account forms and live listing layouts.
+
+assets/components.js
+  Shared navigation and footer. Edit NAVIGATION_LINKS near the top.
+
+assets/supabase-config.js
+  Supabase Project URL and Publishable key only.
+
+assets/pages/
+  Each dynamic page has its own clearly named JavaScript file.
+
+supabase/schema.sql
+  Database tables, image storage and security rules.
+
+PAGE JAVASCRIPT MAP
+-------------------
+register.html         assets/pages/register.js
+login.html            assets/pages/login.js
+dashboard.html        assets/pages/dashboard.js
+edit-profile.html     assets/pages/edit-profile.js
+add-dog.html          assets/pages/add-dog.js
+edit-dog.html         assets/pages/edit-dog.js
+breeders.html         assets/pages/breeders.js
+breeder-profile.html  assets/pages/breeder-profile.js
+dog.html              assets/pages/dog.js
+contact.html          assets/pages/contact.js
+
+CHANGE WEBSITE COLOURS
+----------------------
+Open assets/styles.css and edit the variables in :root:
+
+  --blue
+  --blue-dark
+  --green
+  --black
+  --white
+
+CHANGE THE HOME HERO IMAGE
+--------------------------
+Replace assets/hero.jpg with another image using the same filename.
+
+CHANGE THE LOGO
+---------------
+The shared white dog logo is written in assets/components.js as DOG_LOGO.
+The image files are also kept in assets for future use.
+
+CHANGE NAVIGATION OR FOOTER LINKS
+---------------------------------
+Open assets/components.js.
+Edit NAVIGATION_LINKS for the menu and the footer HTML in renderLayout().
+
+LIVE BREEDERS AND DOGS
+----------------------
+Do not create a separate HTML file for every new breeder or dog.
+The site uses these reusable pages:
+
+  breeder-profile.html?id=BREEDER_USER_ID
+  dog.html?id=DOG_ID
+
+The correct information is loaded from Supabase automatically.
+
+STATIC SAMPLE BREEDERS
+----------------------
+These remain available as examples:
+
+  breeder-blue-sky.html
+  breeder-green-valley.html
+  breeder-coastal.html
+
+PAYMENT WARNING
+---------------
+assets/script.js contains a browser-only sample payment flow for the static breeder
+pages. It is not secure payment verification. Real PayPal confirmation requires a
+server and webhook.
