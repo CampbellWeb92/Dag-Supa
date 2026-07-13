@@ -66,18 +66,16 @@ STEP 5 — REPLACE PLACEHOLDER CONTACT DETAILS
 --------------------------------------------
 Search the project for:
 
-  dag.example
-  +27 10 555 0100
-  REPLACE
+  DAG_SUPPORT_EMAIL
+  DAG_SUPPORT_PHONE
+  REPLACE_WITH_PAYPAL_CLIENT_ID
 
 Replace these with the real Dag support details and payment details.
 
 PAYPAL / ONLINE PAYMENTS
 ------------------------
-The three sample breeder pages still contain a browser-only PayPal demonstration.
-A secure real payment system cannot verify payments from static HTML alone.
-It requires a protected server endpoint and a PayPal webhook.
-
-Do not advertise automatic payment confirmation until that backend is installed.
+The sample breeder pages are visual previews and cannot change listing status.
+Live PayPal checkout uses the included Supabase Edge Functions.
+Complete PAYPAL-SETUP.txt before advertising online checkout.
 Registration, profiles, dog listings, image uploads and bids work through Supabase
 without a separate custom server.

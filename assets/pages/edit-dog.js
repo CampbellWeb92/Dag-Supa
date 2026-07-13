@@ -66,7 +66,7 @@ async function loadDog() {
   }
 }
 
-form.addEventListener("submit", async (event) => {
+form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!dog) return;
 

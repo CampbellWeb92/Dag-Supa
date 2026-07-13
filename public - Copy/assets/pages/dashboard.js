@@ -18,7 +18,7 @@ const logoutButton = document.querySelector("#logout");
 
 if (user) await loadDashboard();
 
-logoutButton.addEventListener("click", async () => {
+logoutButton?.addEventListener("click", async () => {
   await supabase.auth.signOut();
   window.location.href = "login.html";
 });

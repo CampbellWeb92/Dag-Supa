@@ -1,0 +1,31 @@
+DAG WEBSITE — FUNCTIONALITY CHECKLIST
+=====================================
+
+CODE CHECKS COMPLETED
+---------------------
+- All local HTML links resolve.
+- All local script, stylesheet and image references resolve.
+- Shared navigation and mobile menu are present on every page.
+- Login uses direct Supabase authentication and preserves the session.
+- Dashboard, profile, dog listing and password pages show visible errors.
+- Contact email and telephone links are configured.
+- Demo PayPal controls cannot mark a dog sold.
+- Live PayPal capture changes a dog to Temporarily unavailable.
+- Only the authenticated owner sees Confirm Sold in the dashboard.
+- Database triggers protect approval and payment fields.
+- Main, public and public - Copy folders contain matching site files.
+
+REQUIRED BEFORE LIVE USE
+------------------------
+1. Run supabase/schema.sql in the Supabase SQL Editor.
+2. Add the deployed website URLs in Supabase Authentication > URL Configuration.
+3. Confirm assets/supabase-config.js contains the correct Supabase URL and publishable key.
+4. Upload the contents of the public folder to your web host.
+5. Test through HTTPS. Do not open the HTML files by double-clicking them.
+6. For PayPal, complete every step in PAYPAL-SETUP.txt and replace REPLACE_WITH_PAYPAL_CLIENT_ID.
+
+IMPORTANT
+---------
+The website cannot complete real PayPal payments until valid PayPal credentials
+and both Supabase Edge Functions are deployed. The PayPal secret must never be
+added to public HTML or JavaScript files.

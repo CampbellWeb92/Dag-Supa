@@ -24,11 +24,11 @@
               <h2>Marketplace support</h2>
               <p>
                 <strong> Email: </strong>
-                support@dag.example
+                <a id="supportEmail" href="mailto:infocampbellweb@gmail.com">infocampbellweb@gmail.com</a>
               </p>
               <p>
                 <strong> Phone: </strong>
-                +27 10 555 0100
+                <a id="supportPhone" href="tel:0606990845">060 699 0845</a>
               </p>
               <p>
                 <strong> Hours: </strong>
@@ -56,7 +56,7 @@
                   ></textarea>
                 </div>
                 <div class="form-group full">
-                  <button class="btn btn-primary">Send Message</button>
+                  <button class="btn btn-primary" type="submit">Send Message</button>
                 </div>
               </div>
               <p class="notice" id="contactNotice"></p>
@@ -66,11 +66,13 @@
       </section>
     </main>
     <div data-site-footer=""></div>
+    <script src="assets/runtime.js"></script>
     <script src="assets/components.js"></script>
     <script>
       renderLayout("contact");
     </script>
     <script src="assets/script.js"></script>
+    <script src="assets/supabase-config.js"></script>
     <script src="assets/pages/contact.js"></script>
   </body>
 </html>
