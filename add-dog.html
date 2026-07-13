@@ -63,13 +63,9 @@
               />
             </div>
             <div class="field">
-              <label for="status">Availability</label
-              ><select id="status" name="status">
-                <option value="available">Available</option>
-                <option value="reserved">Reserved</option>
-                <option value="sold">Sold</option>
-                <option value="unavailable">Unavailable</option>
-              </select>
+              <label>Availability</label>
+              <input value="Available" disabled />
+              <small>New dogs start as available. Payment and sold statuses are managed securely later.</small>
             </div>
             <div class="field">
               <label for="registered">Registration status</label
@@ -120,9 +116,8 @@
                 accept="image/jpeg,image/png,image/webp"
                 id="mainImage"
                 name="mainImage"
-                required=""
                 type="file"
-              /><img
+              /><small>Optional. JPG, PNG or WebP, maximum 5 MB.</small><img
                 alt="Dog image preview"
                 class="image-preview"
                 id="preview"
@@ -130,7 +125,7 @@
             </div>
             <div class="full"><p class="form-message" id="message"></p></div>
             <div class="form-actions full">
-              <button class="btn btn-primary">Submit Dog for Approval</button
+              <button class="btn btn-primary" type="submit">Submit Dog for Approval</button
               ><a class="btn btn-outline" href="dashboard.html">Cancel</a>
             </div>
           </form>
@@ -138,12 +133,13 @@
       </div>
     </main>
     <div data-site-footer=""></div>
-    <script src="assets/runtime.js"></script>
     <script src="assets/components.js"></script>
     <script>
       renderLayout("dashboard");
     </script>
     <script src="assets/supabase-config.js"></script>
-    <script src="assets/pages/add-dog.js" type="module"></script>
+    <script src="assets/vendor/supabase.js"></script>
+    <script src="assets/auth.js"></script>
+    <script src="assets/pages/add-dog.js"></script>
   </body>
 </html>

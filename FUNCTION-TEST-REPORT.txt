@@ -1,0 +1,33 @@
+DAG FUNCTION TEST REPORT
+
+Checked and repaired:
+- All local HTML links, CSS files, images and JavaScript references
+- Mobile navigation toggle and footer links
+- Breeder registration form
+- Breeder login and persistent Supabase session
+- Forgot-password and update-password forms
+- Dashboard logout
+- Dashboard previous dog listings
+- My Breeder Profile link
+- Owner profile view including pending/rejected/sold listings
+- Add Dog form and database insert
+- Edit Dog form
+- Delete listing action
+- Confirm Sold and Make Available Again buttons
+- Public breeder profiles and dog links
+- Buyer bid form
+- PayPal button without page refresh
+- Contact email and phone links
+- Static sample breeder modals and buttons
+
+Automated checks completed:
+- No missing local href/src files
+- No remaining browser ES-module imports
+- All JavaScript files pass syntax checks
+- Form field names match their JavaScript handlers
+- Mock Supabase tests passed for Add Dog, dashboard history and breeder profile history
+
+External services still required:
+- Supabase project must be active
+- supabase/DATABASE-REPAIR.sql must be run once
+- PayPal Edge Functions and credentials are required for automatic payment capture

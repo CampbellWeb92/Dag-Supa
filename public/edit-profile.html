@@ -92,7 +92,7 @@
             </div>
             <div class="full"><p class="form-message" id="message"></p></div>
             <div class="form-actions full">
-              <button class="btn btn-primary">Save Profile</button
+              <button class="btn btn-primary" type="submit">Save Profile</button
               ><a class="btn btn-outline" href="dashboard.html">Cancel</a>
             </div>
           </form>
@@ -100,12 +100,13 @@
       </div>
     </main>
     <div data-site-footer=""></div>
-    <script src="assets/runtime.js"></script>
     <script src="assets/components.js"></script>
     <script>
       renderLayout("dashboard");
     </script>
     <script src="assets/supabase-config.js"></script>
-    <script src="assets/pages/edit-profile.js" type="module"></script>
+    <script src="assets/vendor/supabase.js"></script>
+    <script src="assets/auth.js"></script>
+    <script src="assets/pages/edit-profile.js"></script>
   </body>
 </html>

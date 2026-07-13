@@ -1,37 +1,40 @@
-import { isConfigured, setButtonLoading, showMessage, supabase } from "../auth.js";
+"use strict";
 
-const form = document.querySelector("#passwordForm");
-const message = document.querySelector("#message");
+(function initialisePasswordUpdate() {
+  const { client, isConfigured, setButtonLoading, showMessage } = window.Dag;
+  const form = document.querySelector("#passwordForm");
+  const message = document.querySelector("#message");
+  if (!form) return;
 
-form?.addEventListener("submit", async (event) => {
-  if (!isConfigured || !supabase) {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    showMessage(message, "Connect Supabase first using SETUP-GUIDE.txt.", "error");
-    return;
-  }
-  event.preventDefault();
+    if (!isConfigured || !client) {
+      showMessage(message, "Supabase is not configured. Check assets/supabase-config.js.", "error");
+      return;
+    }
 
-  const password = form.elements.password.value;
-  const confirmation = form.elements.confirmPassword.value;
-  if (password !== confirmation) {
-    showMessage(message, "The passwords do not match.", "error");
-    return;
-  }
+    const password = form.elements.password.value;
+    const confirmation = form.elements.confirmPassword.value;
+    if (password !== confirmation) {
+      showMessage(message, "The passwords do not match.", "error");
+      return;
+    }
+    if (password.length < 8) {
+      showMessage(message, "Use a password with at least 8 characters.", "error");
+      return;
+    }
 
-  const button = form.querySelector('button[type="submit"]');
-  setButtonLoading(button, true, "Updating…");
-  const { error } = await supabase.auth.updateUser({ password });
-  setButtonLoading(button, false);
-
-  if (error) {
-    showMessage(message, error.message, "error");
-    return;
-  }
-
-  form.reset();
-  showMessage(
-    message,
-    "Password updated. You can now return to your dashboard.",
-    "success",
-  );
-});
+    const button = form.querySelector('button[type="submit"]');
+    setButtonLoading(button, true, "Updating…");
+    try {
+      const { error } = await client.auth.updateUser({ password });
+      if (error) throw error;
+      form.reset();
+      showMessage(message, "Password updated. You can now return to your dashboard.", "success");
+    } catch (error) {
+      showMessage(message, error?.message || "Your password could not be updated.", "error");
+    } finally {
+      setButtonLoading(button, false);
+    }
+  });
+})();

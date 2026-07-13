@@ -1,81 +1,23 @@
-DAG WEBSITE — COMPLETE SETUP GUIDE
-==================================
+DAG SETUP GUIDE
 
-WHAT ALREADY WORKS
-------------------
-- Responsive header, footer and mobile navigation
-- Static sample breeder pages
-- Breeder registration and email/password login
-- Password reset
-- Breeder profile editing and image uploads
-- Add, edit and delete dog listings
-- Approval status for breeders and dogs
-- Automatic live breeder cards on breeders.html
-- Reusable public breeder-profile.html page
-- Reusable public dog.html page
-- Database-backed buyer bids
+Use START-HERE.txt for the shortest setup instructions.
 
-STEP 1 — CREATE SUPABASE
-------------------------
-1. Create a Supabase project.
-2. Open SQL Editor.
-3. Paste and run the complete supabase/schema.sql file.
-4. Open Project Settings > API.
-5. Copy the Project URL and Publishable key.
-6. Paste them into assets/supabase-config.js.
+DATABASE
+Run only this complete repair file in Supabase SQL Editor:
+  supabase/DATABASE-REPAIR.sql
 
-Never put a service_role or secret key in website files.
+WEBSITE DEPLOYMENT
+Upload the contents of:
+  public/
 
-STEP 2 — AUTHENTICATION URLS
-----------------------------
-In Supabase Authentication > URL Configuration, set your Site URL and add:
+SUPABASE CONNECTION
+The current project URL and publishable key are stored in:
+  public/assets/supabase-config.js
 
-  https://YOUR-DOMAIN/login.html
-  https://YOUR-DOMAIN/update-password.html
+AUTH REDIRECTS
+Add your real domain in Supabase Authentication > URL Configuration.
+Include login.html and update-password.html as allowed redirect pages.
 
-For local testing also add:
-
-  http://localhost:8000/login.html
-  http://localhost:8000/update-password.html
-
-STEP 3 — TEST THROUGH A WEB SERVER
-----------------------------------
-Do not double-click the HTML files. JavaScript modules require a web server.
-
-From the Dag folder run:
-
-  python -m http.server 8000
-
-Then visit:
-
-  http://localhost:8000
-
-STEP 4 — APPROVE CONTENT
-------------------------
-New profiles and edited listings stay pending until approved.
-
-In Supabase Table Editor:
-
-  breeder_profiles > approval_status > approved
-  dogs > approval_status > approved
-
-Approved profiles automatically appear on breeders.html.
-Approved dogs automatically appear on breeder-profile.html.
-
-STEP 5 — REPLACE PLACEHOLDER CONTACT DETAILS
---------------------------------------------
-Search the project for:
-
-  DAG_SUPPORT_EMAIL
-  DAG_SUPPORT_PHONE
-  REPLACE_WITH_PAYPAL_CLIENT_ID
-
-Replace these with the real Dag support details and payment details.
-
-PAYPAL / ONLINE PAYMENTS
-------------------------
-The sample breeder pages are visual previews and cannot change listing status.
-Live PayPal checkout uses the included Supabase Edge Functions.
-Complete PAYPAL-SETUP.txt before advertising online checkout.
-Registration, profiles, dog listings, image uploads and bids work through Supabase
-without a separate custom server.
+PAYPAL
+See PAYPAL-SETUP.txt. PayPal client secrets belong only in Supabase Edge
+Function secrets, never in the public website files.

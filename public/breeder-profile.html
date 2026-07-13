@@ -36,8 +36,8 @@
       <section class="section">
         <div class="container">
           <div class="section-title">
-            <h2>Available Dogs</h2>
-            <p>Only approved listings appear publicly.</p>
+            <h2 id="dogsHeading">Available Dogs</h2>
+            <p id="dogsDescription">Only approved listings appear publicly.</p>
           </div>
           <div id="dogGrid" class="breed-grid">
             <div class="empty-state">Loading dogs…</div>
@@ -48,12 +48,13 @@
 
     <div data-site-footer></div>
 
-    <script src="assets/runtime.js"></script>
     <script src="assets/components.js"></script>
     <script>
       renderLayout("breeders");
     </script>
     <script src="assets/supabase-config.js"></script>
-    <script type="module" src="assets/pages/breeder-profile.js"></script>
+    <script src="assets/vendor/supabase.js"></script>
+    <script src="assets/auth.js"></script>
+    <script src="assets/pages/breeder-profile.js"></script>
   </body>
 </html>

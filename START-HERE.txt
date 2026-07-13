@@ -1,21 +1,46 @@
 DAG WEBSITE — START HERE
 
-1. Upload the CONTENTS of this folder to your website's public/root folder.
-   index.html and the assets folder must stay next to each other.
+This package contains one clean source copy and one ready-to-deploy copy.
 
-2. In Supabase, open SQL Editor and run:
-   supabase/schema.sql
+1. SUPABASE DATABASE REPAIR
+   - Open your Supabase project.
+   - Open SQL Editor.
+   - Open supabase/DATABASE-REPAIR.sql from this package.
+   - Copy the entire file into SQL Editor and click Run.
 
-3. In Supabase Authentication > URL Configuration, add your live website URL
-   and add these redirect URLs:
-   https://YOUR-DOMAIN/login.html
-   https://YOUR-DOMAIN/update-password.html
+   This single script:
+   - preserves existing breeder accounts and dog listings;
+   - repairs older breeder/listing ID relationships;
+   - lets breeders see all their own previous listings;
+   - repairs Add Dog permissions;
+   - creates the image bucket and policies;
+   - repairs bids, profiles, payments and Row Level Security.
 
-4. The Supabase project API URL has been corrected in:
-   assets/supabase-config.js
+2. DEPLOY THE WEBSITE
+   - Upload the CONTENTS of the public folder to your website host.
+   - Do not upload an older public folder from a previous ZIP.
+   - Replace all existing files, especially the complete assets folder.
 
-5. New breeder profiles and dog listings start as "pending".
-   Approve them in Supabase Table Editor by changing approval_status to approved.
+3. SUPABASE AUTH SETTINGS
+   In Supabase > Authentication > URL Configuration:
+   - Site URL: your real website address
+   - Redirect URLs:
+       https://YOUR-DOMAIN/login.html
+       https://YOUR-DOMAIN/update-password.html
 
-Important: test through a web server or hosting platform. Do not test module-based pages
-by double-clicking the HTML files, because browsers may block JavaScript modules on file:// URLs.
+4. TEST IN THIS ORDER
+   - Register or log in as a breeder.
+   - Open Dashboard.
+   - Confirm previous listings are visible.
+   - Click Add Dog and submit a test listing.
+   - Open My Breeder Profile and confirm the listing appears there.
+   - Edit and delete the test listing.
+
+5. PAYPAL
+   Basic PayPal.Me links work after a breeder saves one in Edit Profile.
+   Automatic payment confirmation and temporary-unavailable status require
+   the Edge Function steps in PAYPAL-SETUP.txt.
+
+IMPORTANT
+- Do not put a PayPal secret or Supabase service-role key in any HTML or browser JavaScript file.
+- The Supabase publishable key in assets/supabase-config.js is safe for browser use when Row Level Security is enabled.

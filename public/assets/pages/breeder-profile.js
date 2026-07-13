@@ -1,89 +1,94 @@
-import {
-  escapeHtml,
-  isConfigured,
-  money,
-  showMessage,
-  supabase,
-} from "../auth.js";
+"use strict";
 
-const id = new URLSearchParams(window.location.search).get("id");
-const message = document.querySelector("#message");
-const profileContent = document.querySelector("#profileContent");
-const dogGrid = document.querySelector("#dogGrid");
+(async function initialiseBreederProfile() {
+  const { client, escapeHtml, isConfigured, money, showMessage } = window.Dag;
+  const id = new URLSearchParams(window.location.search).get("id");
+  const message = document.querySelector("#message");
+  const profileContent = document.querySelector("#profileContent");
+  const dogGrid = document.querySelector("#dogGrid");
+  const dogsHeading = document.querySelector("#dogsHeading");
+  const dogsDescription = document.querySelector("#dogsDescription");
 
-if (!isConfigured) {
-  showMessage(
-    message,
-    "Connect Supabase to display live breeder profiles.",
-    "info",
-  );
-} else if (!id) {
-  showMessage(message, "No breeder was selected.", "error");
-} else {
-  await loadProfile();
-}
-
-async function loadProfile() {
-  const { data: profile, error: profileError } = await supabase
-    .from("breeder_profiles")
-    .select("*")
-    .eq("user_id", id)
-    .eq("approval_status", "approved")
-    .single();
-
-  if (profileError || !profile) {
-    showMessage(message, "This breeder profile could not be found.", "error");
+  if (!isConfigured || !client) {
+    showMessage(message, "Supabase is not configured. Check assets/supabase-config.js.", "error");
+    return;
+  }
+  if (!id) {
+    showMessage(message, "No breeder was selected.", "error");
     return;
   }
 
-  document.querySelector("#pageTitle").textContent = profile.business_name;
-  document.querySelector("#pageSubtitle").textContent =
-    `${profile.town || ""}, ${profile.province || ""}`;
+  const { data: sessionData } = await client.auth.getSession();
+  const isOwner = sessionData?.session?.user?.id === id;
+
+  let profileQuery = client.from("breeder_profiles").select("*").eq("user_id", id);
+  if (!isOwner) profileQuery = profileQuery.eq("approval_status", "approved");
+  const { data: profile, error: profileError } = await profileQuery.maybeSingle();
+
+  if (profileError || !profile) {
+    showMessage(
+      message,
+      isOwner
+        ? profileError?.message || "Your breeder profile could not be loaded."
+        : "This breeder profile is not publicly available.",
+      "error",
+    );
+    return;
+  }
+
+  document.querySelector("#pageTitle").textContent = profile.business_name || "Breeder Profile";
+  document.querySelector("#pageSubtitle").textContent = [profile.town, profile.province].filter(Boolean).join(", ") || "Breeder information";
+  if (isOwner) {
+    dogsHeading.textContent = "My Dog Listings";
+    dogsDescription.textContent = "All of your listings appear here, including pending and rejected listings.";
+  }
 
   const whatsapp = (profile.whatsapp || profile.phone || "").replace(/\D/g, "");
   profileContent.innerHTML = `
     <div>
-      <span class="badge">Approved breeder</span>
-      <h2>${escapeHtml(profile.business_name)}</h2>
+      <span class="badge">${isOwner ? `Profile: ${escapeHtml(profile.approval_status || "pending")}` : "Approved breeder"}</span>
+      <h2>${escapeHtml(profile.business_name || "Breeder")}</h2>
       <p>${escapeHtml(profile.description || "Contact this breeder for more information.")}</p>
       <p><strong>Breeds:</strong> ${escapeHtml(profile.breeds || "Not supplied")}</p>
-      <p><strong>Location:</strong> ${escapeHtml(profile.town || "")}, ${escapeHtml(profile.province || "")}</p>
+      <p><strong>Location:</strong> ${escapeHtml([profile.town, profile.province].filter(Boolean).join(", ") || "Not supplied")}</p>
       <div class="button-row">
-        ${profile.phone ? `<a class="btn btn-primary" href="tel:${escapeHtml(profile.phone)}">Call Breeder</a>` : ""}
-        ${whatsapp ? `<a class="btn btn-green" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+        ${isOwner ? '<a class="btn btn-outline" href="edit-profile.html">Edit Profile</a><a class="btn btn-primary" href="add-dog.html">Add a Dog</a><a class="btn btn-outline" href="dashboard.html">Dashboard</a>' : ""}
+        ${!isOwner && profile.phone ? `<a class="btn btn-primary" href="tel:${escapeHtml(profile.phone)}">Call Breeder</a>` : ""}
+        ${!isOwner && whatsapp ? `<a class="btn btn-green" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
       </div>
     </div>
-    <img src="${escapeHtml(profile.profile_image_url || "https://placehold.co/900x650?text=Breeder")}" alt="${escapeHtml(profile.business_name)}" />
-  `;
+    <img src="${escapeHtml(profile.profile_image_url || "assets/hero.jpg")}" alt="${escapeHtml(profile.business_name || "Breeder")}" />`;
 
-  const { data: dogs, error: dogsError } = await supabase
-    .from("dogs")
-    .select("*")
-    .eq("breeder_id", id)
-    .eq("approval_status", "approved")
-    .order("created_at", { ascending: false });
+  let dogQuery = client.from("dogs").select("*").eq("breeder_id", id);
+  if (!isOwner) dogQuery = dogQuery.eq("approval_status", "approved");
+  const { data: dogs, error: dogsError } = await dogQuery.order("created_at", { ascending: false });
 
   if (dogsError) {
     showMessage(message, dogsError.message, "error");
+    dogGrid.innerHTML = '<div class="empty-state">The dog listings could not be loaded.</div>';
     return;
   }
 
-  dogGrid.innerHTML = dogs?.length
-    ? dogs
-        .map(
-          (dog) => `
+  const visibleDogs = isOwner ? dogs || [] : (dogs || []).filter((dog) => dog.status !== "sold");
+  dogGrid.innerHTML = visibleDogs.length
+    ? visibleDogs.map((dog) => `
       <article class="card dog-card">
-        <img src="${escapeHtml(dog.main_image_url || "https://placehold.co/900x650?text=Dog")}" alt="${escapeHtml(dog.name)}" />
+        <img src="${escapeHtml(dog.main_image_url || "assets/hero.jpg")}" alt="${escapeHtml(dog.name)}" />
         <div class="card-body">
-          <span class="badge">${escapeHtml(dog.status)}</span>
+          <span class="badge">${escapeHtml(statusLabel(dog.status))}</span>
+          ${isOwner ? `<span class="badge">Approval: ${escapeHtml(dog.approval_status || "pending")}</span>` : ""}
           <h3>${escapeHtml(dog.name)}</h3>
           <p>${escapeHtml(dog.breed)}</p>
           <div class="price">${money(dog.price)}</div>
           <a class="btn btn-primary" href="dog.html?id=${encodeURIComponent(dog.id)}">View Dog</a>
+          ${isOwner ? `<a class="btn btn-outline" href="edit-dog.html?id=${encodeURIComponent(dog.id)}">Edit</a>` : ""}
         </div>
-      </article>
-    `,
-        )
-        .join("")
-    : '<div class="empty-state"><p>No approved dogs are listed yet.</p></div>';
-}
+      </article>`).join("")
+    : `<div class="empty-state"><p>${isOwner ? "You have no dog listings yet." : "No approved dogs are currently available."}</p>${isOwner ? '<a class="btn btn-primary" href="add-dog.html">Add a Dog</a>' : ""}</div>`;
+
+  function statusLabel(status = "available") {
+    return status === "unavailable"
+      ? "Temporarily unavailable"
+      : status.charAt(0).toUpperCase() + status.slice(1);
+  }
+})();

@@ -1,130 +1,95 @@
-import {
-  previewImage,
-  requireUser,
-  setButtonLoading,
-  showMessage,
-  supabase,
-  uploadImage,
-} from "../auth.js";
+"use strict";
 
-const user = await requireUser();
-const form = document.querySelector("#profileForm");
-const preview = document.querySelector("#preview");
-const imageInput = document.querySelector("#profileImage");
-const message = document.querySelector("#message");
-let currentProfile = {};
+(async function initialiseEditProfile() {
+  const {
+    cleanPayPalUrl,
+    client,
+    ensureBreederProfile,
+    previewImage,
+    requireUser,
+    setButtonLoading,
+    showMessage,
+    uploadImage,
+  } = window.Dag;
 
-previewImage(imageInput, preview);
-if (user) await loadProfile();
+  const user = await requireUser();
+  if (!user) return;
 
-async function loadProfile() {
-  const { data, error } = await supabase
-    .from("breeder_profiles")
-    .select("*")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const form = document.querySelector("#profileForm");
+  const preview = document.querySelector("#preview");
+  const imageInput = document.querySelector("#profileImage");
+  const message = document.querySelector("#message");
+  let currentProfile = {};
 
-  if (error) {
-    showMessage(message, error.message, "error");
-    return;
-  }
-
-  currentProfile = data || {};
-  const fields = [
-    "contact_name",
-    "business_name",
-    "phone",
-    "whatsapp",
-    "paypal_me_url",
-    "province",
-    "town",
-    "breeds",
-    "registration_number",
-    "description",
-  ];
-
-  fields.forEach((fieldName) => {
-    form.elements[fieldName].value = currentProfile[fieldName] || "";
-  });
-
-  if (currentProfile.profile_image_url) {
-    preview.src = currentProfile.profile_image_url;
-    preview.style.display = "block";
-  }
-}
-
-form?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const button = form.querySelector('button[type="submit"]');
-  setButtonLoading(button, true);
+  previewImage(imageInput, preview);
 
   try {
-    let profileImageUrl = currentProfile.profile_image_url || null;
-    if (imageInput.files[0]) {
-      profileImageUrl = await uploadImage(
-        imageInput.files[0],
-        `${user.id}/profile/profile`,
-      );
+    currentProfile = await ensureBreederProfile(user);
+    [
+      "contact_name",
+      "business_name",
+      "phone",
+      "whatsapp",
+      "paypal_me_url",
+      "province",
+      "town",
+      "breeds",
+      "registration_number",
+      "description",
+    ].forEach((fieldName) => {
+      if (form.elements[fieldName]) form.elements[fieldName].value = currentProfile[fieldName] || "";
+    });
+
+    if (currentProfile.profile_image_url) {
+      preview.src = currentProfile.profile_image_url;
+      preview.style.display = "block";
     }
-
-    const values = {
-      user_id: user.id,
-      email: user.email,
-      contact_name: form.elements.contact_name.value.trim(),
-      business_name: form.elements.business_name.value.trim(),
-      phone: form.elements.phone.value.trim(),
-      whatsapp: form.elements.whatsapp.value.trim(),
-      paypal_me_url: cleanPayPalUrl(form.elements.paypal_me_url.value),
-      province: form.elements.province.value.trim(),
-      town: form.elements.town.value.trim(),
-      breeds: form.elements.breeds.value.trim(),
-      registration_number: form.elements.registration_number.value.trim(),
-      description: form.elements.description.value.trim(),
-      profile_image_url: profileImageUrl,
-      approval_status: currentProfile.approval_status || "pending",
-      updated_at: new Date().toISOString(),
-    };
-
-    function cleanPayPalUrl(value) {
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return null;
-  }
-
-  try {
-    const url = new URL(trimmedValue);
-
-    const allowedHosts = [
-      "paypal.me",
-      "www.paypal.me",
-    ];
-
-    if (!allowedHosts.includes(url.hostname.toLowerCase())) {
-      throw new Error(
-        "Please enter a valid PayPal.Me link, such as https://paypal.me/YourName",
-      );
-    }
-
-    return url.toString();
-  } catch {
-    throw new Error(
-      "Please enter a valid PayPal.Me link, such as https://paypal.me/YourName",
-    );
-  }
-}
-
-    const { error } = await supabase
-      .from("breeder_profiles")
-      .upsert(values, { onConflict: "user_id" });
-
-    if (error) throw error;
-    currentProfile = { ...currentProfile, ...values };
-    showMessage(message, "Profile saved successfully.", "success");
   } catch (error) {
-    showMessage(message, error.message, "error");
-  } finally {
-    setButtonLoading(button, false);
+    showMessage(message, error?.message || "Your profile could not be loaded.", "error");
   }
-});
 
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]');
+    setButtonLoading(button, true);
+
+    try {
+      let profileImageUrl = currentProfile.profile_image_url || null;
+      if (imageInput.files?.[0]) {
+        profileImageUrl = await uploadImage(imageInput.files[0], `${user.id}/profile/profile`);
+      }
+
+      const values = {
+        user_id: user.id,
+        email: user.email || currentProfile.email || "",
+        contact_name: form.elements.contact_name.value.trim(),
+        business_name: form.elements.business_name.value.trim(),
+        phone: form.elements.phone.value.trim() || null,
+        whatsapp: form.elements.whatsapp.value.trim() || null,
+        paypal_me_url: cleanPayPalUrl(form.elements.paypal_me_url.value),
+        province: form.elements.province.value.trim() || null,
+        town: form.elements.town.value.trim() || null,
+        breeds: form.elements.breeds.value.trim() || null,
+        registration_number: form.elements.registration_number.value.trim() || null,
+        description: form.elements.description.value.trim() || null,
+        profile_image_url: profileImageUrl,
+        updated_at: new Date().toISOString(),
+      };
+      if (!currentProfile.user_id) values.approval_status = "pending";
+
+      const { data, error } = await client
+        .from("breeder_profiles")
+        .upsert(values, { onConflict: "user_id" })
+        .select("*")
+        .single();
+      if (error) throw error;
+
+      currentProfile = data;
+      showMessage(message, "Profile saved successfully.", "success");
+    } catch (error) {
+      showMessage(message, error?.message || "Your profile could not be saved.", "error");
+    } finally {
+      setButtonLoading(button, false);
+    }
+  });
+})();

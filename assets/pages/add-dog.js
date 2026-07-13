@@ -1,70 +1,91 @@
-import {
-  previewImage,
-  requireUser,
-  setButtonLoading,
-  showMessage,
-  supabase,
-  uploadImage,
-} from "../auth.js";
+"use strict";
 
-const user = await requireUser();
-const form = document.querySelector("#dogForm");
-const preview = document.querySelector("#preview");
-const imageInput = document.querySelector("#mainImage");
-const message = document.querySelector("#message");
+(async function initialiseAddDog() {
+  const {
+    client,
+    createUuid,
+    ensureBreederProfile,
+    previewImage,
+    requireUser,
+    setButtonLoading,
+    showMessage,
+    uploadImage,
+  } = window.Dag;
 
-previewImage(imageInput, preview);
+  const form = document.querySelector("#dogForm");
+  const preview = document.querySelector("#preview");
+  const imageInput = document.querySelector("#mainImage");
+  const message = document.querySelector("#message");
+  if (!form) return;
 
-form?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const button = form.querySelector('button[type="submit"]');
-  setButtonLoading(button, true, "Submitting…");
+  const user = await requireUser();
+  if (!user) return;
+  previewImage(imageInput, preview);
 
   try {
-    const dogId = crypto.randomUUID();
-    const mainImageUrl = await uploadImage(
-      imageInput.files[0],
-      `${user.id}/dogs/${dogId}/main`,
-    );
-
-    const row = getDogValues(form);
-    row.id = dogId;
-    row.breeder_id = user.id;
-    row.main_image_url = mainImageUrl;
-    row.approval_status = "pending";
-
-    const { error } = await supabase.from("dogs").insert(row);
-    if (error) throw error;
-
-    form.reset();
-    preview.removeAttribute("src");
-    preview.style.display = "none";
-    showMessage(
-      message,
-      "Dog submitted successfully and is waiting for approval.",
-      "success",
-    );
+    await ensureBreederProfile(user);
   } catch (error) {
-    showMessage(message, error.message, "error");
-  } finally {
-    setButtonLoading(button, false);
+    showMessage(message, `Your breeder profile is not ready: ${error.message}`, "error");
   }
-});
 
-function getDogValues(dogForm) {
-  return {
-    name: dogForm.elements.name.value.trim(),
-    breed: dogForm.elements.breed.value.trim(),
-    sex: dogForm.elements.sex.value,
-    date_of_birth: dogForm.elements.date_of_birth.value || null,
-    colour: dogForm.elements.colour.value.trim(),
-    price: Number(dogForm.elements.price.value),
-    status: dogForm.elements.status.value,
-    registered: dogForm.elements.registered.value === "true",
-    vaccinated: dogForm.elements.vaccinated.value === "true",
-    microchipped: dogForm.elements.microchipped.value === "true",
-    health_tests: dogForm.elements.health_tests.value.trim(),
-    bloodline: dogForm.elements.bloodline.value.trim(),
-    description: dogForm.elements.description.value.trim(),
-  };
-}
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]');
+    setButtonLoading(button, true, "Submitting…");
+
+    try {
+      await ensureBreederProfile(user);
+
+      const name = form.elements.name.value.trim();
+      const breed = form.elements.breed.value.trim();
+      const description = form.elements.description.value.trim();
+      const price = Number(form.elements.price.value);
+      if (!name || !breed || !description) throw new Error("Complete all required listing details.");
+      if (!Number.isFinite(price) || price < 0) throw new Error("Please enter a valid price.");
+
+      const dogId = createUuid();
+      const file = imageInput.files?.[0] || null;
+      const mainImageUrl = file
+        ? await uploadImage(file, `${user.id}/dogs/${dogId}/main`)
+        : null;
+
+      const row = {
+        id: dogId,
+        breeder_id: user.id,
+        name,
+        breed,
+        sex: form.elements.sex.value,
+        date_of_birth: form.elements.date_of_birth.value || null,
+        colour: form.elements.colour.value.trim() || null,
+        price,
+        status: "available",
+        registered: form.elements.registered.value === "true",
+        vaccinated: form.elements.vaccinated.value === "true",
+        microchipped: form.elements.microchipped.value === "true",
+        health_tests: form.elements.health_tests.value.trim() || null,
+        bloodline: form.elements.bloodline.value.trim() || null,
+        description,
+        main_image_url: mainImageUrl,
+        approval_status: "pending",
+      };
+
+      const { error } = await client.from("dogs").insert(row);
+      if (error) throw error;
+
+      showMessage(
+        message,
+        "Dog added successfully. It now appears in your dashboard while awaiting public approval.",
+        "success",
+      );
+      window.setTimeout(() => window.location.assign("dashboard.html"), 700);
+    } catch (error) {
+      showMessage(
+        message,
+        error?.message || "The dog could not be added. Run supabase/DATABASE-REPAIR.sql and try again.",
+        "error",
+      );
+    } finally {
+      setButtonLoading(button, false);
+    }
+  });
+})();

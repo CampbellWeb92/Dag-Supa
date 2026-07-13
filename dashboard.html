@@ -1,68 +1,66 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width,initial-scale=1" name="viewport" />
-    <title>Breeder Dashboard | Dag</title>
-    <link href="assets/styles.css" rel="stylesheet" />
-    <link href="assets/auth.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div data-site-header=""></div>
-    <main>
-      <section class="page-banner breeders-banner">
-        <div class="container">
-          <h1>Breeder Dashboard</h1>
-          <p id="welcome">Manage your Dag profile and listings.</p>
-        </div>
-      </section>
-      <div class="auth-shell dashboard-grid">
-        <aside class="dashboard-nav">
-          <a class="active" href="dashboard.html">Overview</a
-          ><a href="edit-profile.html">Edit Profile</a
-          ><a href="add-dog.html">Add a Dog</a
-          ><button id="logout">Log Out</button>
-        </aside>
-        <section class="dashboard-main">
-          <div class="stat-grid">
-            <article class="stat-card">
-              <strong id="dogCount">0</strong>Total dogs
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Breeder Dashboard | Dag</title>
+<link href="assets/styles.css" rel="stylesheet"/>
+<link href="assets/auth.css" rel="stylesheet"/>
+</head>
+<body>
+<div data-site-header=""></div>
+<main>
+<section class="page-banner breeders-banner">
+<div class="container">
+<h1>Breeder Dashboard</h1>
+<p id="welcome">Manage your Dag profile and listings.</p>
+</div>
+</section>
+<div class="auth-shell dashboard-grid">
+<aside class="dashboard-nav">
+<a class="active" href="dashboard.html">Overview</a><a href="edit-profile.html">Edit Profile</a><a href="add-dog.html">Add a Dog</a><a href="breeder-profile.html" id="viewProfileLink">My Breeder Profile</a><button id="logout" type="button">Log Out</button>
+</aside>
+<section class="dashboard-main">
+<div class="stat-grid">
+<article class="stat-card">
+<strong id="dogCount">0</strong>Total dogs
             </article>
-            <article class="stat-card">
-              <strong id="availableCount">0</strong>Available
+<article class="stat-card">
+<strong id="availableCount">0</strong>Available
             </article>
-            <article class="stat-card">
-              <strong id="profileStatus">—</strong>Profile status
+<article class="stat-card">
+<strong id="profileStatus">—</strong>Profile status
             </article>
-          </div>
-          <div class="auth-card">
-            <div class="form-actions" style="justify-content: space-between">
-              <h2 class="auth-heading">My dogs</h2>
-              <a class="btn btn-primary" href="add-dog.html">Add Dog</a>
-            </div>
-            <p class="form-message" id="message"></p>
-            <div class="dog-list" id="dogList">
-              <div class="empty-state">Loading your listings…</div>
-            </div>
-          </div>
-          <div class="auth-card">
-            <h2 class="auth-heading">Buyer bids</h2>
-            <p>New offers submitted for your dog listings.</p>
-            <div class="dog-list" id="bidList">
-              <div class="empty-state">Loading bids…</div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-    <div data-site-footer=""></div>
-    <script src="assets/runtime.js"></script>
-    <script src="assets/components.js"></script>
-    <script>
+</div>
+<div class="auth-card">
+<div class="form-actions" style="justify-content: space-between">
+<h2 class="auth-heading">My dogs</h2>
+<div class="button-row"><button class="btn btn-outline" id="refreshListings" type="button">Refresh Listings</button><a class="btn btn-primary" href="add-dog.html">Add Dog</a></div>
+</div>
+<p class="form-message" id="message"></p>
+<div class="dog-list" id="dogList">
+<div class="empty-state">Loading your listings…</div>
+</div>
+</div>
+<div class="auth-card">
+<h2 class="auth-heading">Buyer bids</h2>
+<p>New offers submitted for your dog listings.</p>
+<div class="dog-list" id="bidList">
+<div class="empty-state">Loading bids…</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<div data-site-footer=""></div>
+<script src="assets/components.js"></script>
+<script>
       renderLayout("dashboard");
     </script>
-    <script src="assets/supabase-config.js"></script>
-    <script src="assets/pages/dashboard.js" type="module"></script>
-  </body>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/vendor/supabase.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/pages/dashboard.js"></script>
+</body>
 </html>

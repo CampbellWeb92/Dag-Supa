@@ -1,48 +1,39 @@
-import { escapeHtml, isConfigured, showMessage, supabase } from "../auth.js";
+"use strict";
 
-const grid = document.querySelector("#breederGrid");
-const message = document.querySelector("#breederMessage");
+(async function loadLiveBreeders() {
+  const { client, escapeHtml, isConfigured, showMessage } = window.Dag;
+  const grid = document.querySelector("#breederGrid");
+  const message = document.querySelector("#breederMessage");
+  if (!grid || !isConfigured || !client) return;
 
-if (isConfigured) loadLiveBreeders();
-
-async function loadLiveBreeders() {
-  const { data: profiles, error } = await supabase
+  const { data: profiles, error } = await client
     .from("breeder_profiles")
-    .select(
-      "user_id,business_name,town,province,breeds,description,profile_image_url",
-    )
+    .select("user_id,business_name,town,province,breeds,description,profile_image_url")
     .eq("approval_status", "approved")
     .order("business_name");
 
   if (error) {
-    showMessage(
-      message,
-      "Live breeder profiles could not be loaded. The sample profiles are still available.",
-      "error",
-    );
+    showMessage(message, "Live breeder profiles could not be loaded. Sample profiles remain available.", "error");
     return;
   }
-
   if (!profiles?.length) return;
 
-  const liveCards = profiles
-    .map(
-      (profile) => `
-    <article class="card">
-      <img
-        src="${escapeHtml(profile.profile_image_url || "https://placehold.co/900x650?text=Breeder")}"
-        alt="${escapeHtml(profile.business_name)}"
-      />
+  const liveHeading = document.createElement("div");
+  liveHeading.className = "full-width-list-heading";
+  liveHeading.innerHTML = "<h2>Registered Dag Breeders</h2>";
+  grid.before(liveHeading);
+
+  const liveCards = profiles.map((profile) => `
+    <article class="card live-breeder-card">
+      <img src="${escapeHtml(profile.profile_image_url || "assets/hero.jpg")}" alt="${escapeHtml(profile.business_name)}" />
       <div class="card-body">
-        <span class="badge">${escapeHtml(profile.town || "")}, ${escapeHtml(profile.province || "")}</span>
+        <span class="badge">${escapeHtml([profile.town, profile.province].filter(Boolean).join(", ") || "South Africa")}</span>
         <h2>${escapeHtml(profile.business_name)}</h2>
-        <p>${escapeHtml(profile.breeds || profile.description || "View this breeder’s available dogs.")}</p>
+        <p>${escapeHtml(profile.breeds || profile.description || "View this breeder’s dog listings.")}</p>
         <a class="btn btn-primary" href="breeder-profile.html?id=${encodeURIComponent(profile.user_id)}">View Profile</a>
       </div>
-    </article>
-  `,
-    )
-    .join("");
+    </article>`).join("");
 
   grid.insertAdjacentHTML("afterbegin", liveCards);
-}
+  showMessage(message, `${profiles.length} registered breeder profile${profiles.length === 1 ? "" : "s"} loaded.`, "success");
+})();

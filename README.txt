@@ -1,37 +1,24 @@
-DAG DOG MARKETPLACE
-===================
+DAG DOG MARKETPLACE — CORRECTED BUILD
 
-Start with:
-  1. SETUP-GUIDE.txt
-  2. EDITING-GUIDE.txt
-  3. assets/supabase-config.js
-  4. supabase/schema.sql
+Use START-HERE.txt first.
 
-The project is organised so every dynamic page has its own JavaScript file inside
-assets/pages. This keeps the HTML readable and makes future editing safer.
+DEPLOYMENT FOLDER
+Upload the contents of:
+  public/
 
-Main public pages:
-  index.html
-  breeders.html
-  breeder-profile.html
-  dog.html
-  how-it-works.html
-  contact.html
+DATABASE FILE
+Run this one complete file in Supabase SQL Editor:
+  supabase/DATABASE-REPAIR.sql
 
-Breeder account pages:
-  register.html
-  login.html
-  forgot-password.html
-  update-password.html
-  dashboard.html
-  edit-profile.html
-  add-dog.html
-  edit-dog.html
+The repaired build uses:
+- a locally bundled Supabase browser library;
+- one consistent login/session system;
+- owner-only dashboard and listing controls;
+- historical listing visibility for the logged-in breeder;
+- Add Dog, Edit Dog and Delete Dog actions;
+- public approved breeder and dog pages;
+- breeder-only Confirm Sold after a verified payment;
+- PayPal.Me fallback links and optional secure PayPal Edge Functions.
 
-PAYPAL PAYMENT FLOW UPDATE
---------------------------
-The public demo confirmation/localStorage sold system has been removed.
-Live dog pages now use PayPal Checkout through Supabase Edge Functions.
-Run supabase/payment-flow-migration.sql and follow PAYPAL-SETUP.txt before enabling payments.
-A completed PayPal capture marks the dog Temporarily unavailable.
-Only the owning logged-in breeder can select Confirm Sold in the dashboard.
+The old duplicate "public - Copy" folder and conflicting direct-login code were removed.
+See FUNCTION-TEST-REPORT.txt for the completed checks.

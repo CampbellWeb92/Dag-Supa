@@ -7,6 +7,5 @@ window.DAG_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_c2ftr7G89EbQsoGBwn5S5g_BmS
 // PayPal Developer Dashboard > Apps & Credentials
 window.DAG_PAYPAL_CLIENT_ID = "REPLACE_WITH_PAYPAL_CLIENT_ID";
 
-// Public support details used by contact.html.
-window.DAG_SUPPORT_EMAIL = "infocampbellweb@gmail.com";
-window.DAG_SUPPORT_PHONE = "0606990845";
+// Public support contact used by contact.html.
+window.DAG_CONTACT_EMAIL = "infocampbellweb@gmail.com";

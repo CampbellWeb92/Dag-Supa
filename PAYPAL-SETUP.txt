@@ -1,22 +1,30 @@
 DAG PAYPAL SETUP
-================
 
-The website code is already connected to Supabase Edge Functions. Complete these steps once:
+The basic PayPal.Me option works when a breeder saves their public PayPal.Me
+link in Edit Profile. A PayPal.Me payment cannot automatically tell Dag that a
+payment completed.
 
-1. Run supabase/payment-flow-migration.sql in Supabase > SQL Editor.
+For verified checkout and automatic Temporarily unavailable status:
+
+1. Run supabase/DATABASE-REPAIR.sql in Supabase SQL Editor.
 2. Create a PayPal REST app in the PayPal Developer Dashboard.
-3. Put the public Client ID in assets/supabase-config.js.
-4. In Supabase Edge Function Secrets add:
-   PAYPAL_CLIENT_ID
-   PAYPAL_CLIENT_SECRET
-   PAYPAL_BASE_URL=https://api-m.paypal.com
+3. Put the public PayPal Client ID in:
+     public/assets/supabase-config.js
+   and also in the source copy:
+     assets/supabase-config.js
+4. Add these Supabase Edge Function secrets:
+     PAYPAL_CLIENT_ID
+     PAYPAL_CLIENT_SECRET
+     PAYPAL_BASE_URL=https://api-m.paypal.com
    Use https://api-m.sandbox.paypal.com while testing.
-5. Deploy both functions:
-   supabase functions deploy create-paypal-order --no-verify-jwt
-   supabase functions deploy capture-paypal-order --no-verify-jwt
-6. Upload the website files.
+5. Deploy both included functions:
+     supabase functions deploy create-paypal-order --no-verify-jwt
+     supabase functions deploy capture-paypal-order --no-verify-jwt
 
-IMPORTANT
-- Never place PAYPAL_CLIENT_SECRET or SUPABASE_SERVICE_ROLE_KEY in HTML or browser JavaScript.
-- This setup uses one platform PayPal REST account. PayPal.Me links cannot securely report completed payments back to Dag.
-- After capture, the dog becomes Temporarily unavailable. Only its authenticated breeder sees Confirm Sold.
+After a verified capture:
+- the dog becomes Temporarily unavailable;
+- the public cannot mark the dog sold;
+- only the owning logged-in breeder sees Confirm Sold in the dashboard.
+
+Never place PAYPAL_CLIENT_SECRET or SUPABASE_SERVICE_ROLE_KEY in public HTML or
+browser JavaScript.
