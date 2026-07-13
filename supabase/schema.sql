@@ -14,6 +14,7 @@ create table if not exists public.breeder_profiles (
   email text not null,
   phone text,
   whatsapp text,
+  paypal_me_url text,
   province text,
   town text,
   breeds text,

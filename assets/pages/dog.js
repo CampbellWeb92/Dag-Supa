@@ -28,7 +28,7 @@ async function loadDog() {
   const { data: dog, error } = await supabase
     .from("dogs")
     .select(
-      "*, breeder_profiles!dogs_breeder_id_fkey(business_name,phone,whatsapp,town,province)",
+      "*, breeder_profiles!dogs_breeder_id_fkey(business_name,phone,whatsapp,paypal_me_url,town,province)",
     )
     .eq("id", id)
     .single();
@@ -40,6 +40,7 @@ async function loadDog() {
 
   const breeder = dog.breeder_profiles || {};
   const whatsapp = (breeder.whatsapp || breeder.phone || "").replace(/\D/g, "");
+  const paypalUrl = getPayPalUrl(breeder.paypal_me_url);
 
   document.querySelector("#pageTitle").textContent = dog.name;
   document.querySelector("#pageSubtitle").textContent =
@@ -74,11 +75,37 @@ async function loadDog() {
       <p><strong>${escapeHtml(breeder.business_name || "Dag breeder")}</strong><br />${escapeHtml(breeder.town || "")}, ${escapeHtml(breeder.province || "")}</p>
 
       <div class="form-actions">
-        ${breeder.phone ? `<a class="btn btn-primary" href="tel:${escapeHtml(breeder.phone)}">Call Breeder</a>` : ""}
-        ${whatsapp ? `<a class="btn btn-green" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
-      </div>
-    </div>
-  `;
+  ${
+    breeder.phone
+      ? `<a class="btn btn-primary"
+            href="tel:${escapeHtml(breeder.phone)}">
+            Call Breeder
+         </a>`
+      : ""
+  }
+
+  ${
+    whatsapp
+      ? `<a class="btn btn-green"
+            href="https://wa.me/${whatsapp}"
+            target="_blank"
+            rel="noopener">
+            WhatsApp
+         </a>`
+      : ""
+  }
+
+  ${
+    paypalUrl && dog.status === "available"
+      ? `<a class="btn btn-paypal"
+            href="${escapeHtml(paypalUrl)}"
+            target="_blank"
+            rel="noopener noreferrer">
+            Pay Breeder with PayPal
+         </a>`
+      : ""
+  }
+</div>
 
   bidForm.elements.dog_id.value = dog.id;
   bidForm.elements.breeder_id.value = dog.breeder_id;
@@ -110,3 +137,23 @@ bidForm.addEventListener("submit", async (event) => {
     "success",
   );
 });
+function getPayPalUrl(value) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (
+      url.hostname.toLowerCase() !== "paypal.me" &&
+      url.hostname.toLowerCase() !== "www.paypal.me"
+    ) {
+      return "";
+    }
+
+    return url.toString();
+  } catch {
+    return "";
+  }
+}

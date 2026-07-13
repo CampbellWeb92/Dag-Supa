@@ -35,6 +35,7 @@ async function loadProfile() {
     "business_name",
     "phone",
     "whatsapp",
+    "paypal_me_url",
     "province",
     "town",
     "breeds",
@@ -73,6 +74,7 @@ form.addEventListener("submit", async (event) => {
       business_name: form.elements.business_name.value.trim(),
       phone: form.elements.phone.value.trim(),
       whatsapp: form.elements.whatsapp.value.trim(),
+      paypal_me_url: cleanPayPalUrl(form.elements.paypal_me_url.value),
       province: form.elements.province.value.trim(),
       town: form.elements.town.value.trim(),
       breeds: form.elements.breeds.value.trim(),
@@ -82,6 +84,35 @@ form.addEventListener("submit", async (event) => {
       approval_status: currentProfile.approval_status || "pending",
       updated_at: new Date().toISOString(),
     };
+
+    function cleanPayPalUrl(value) {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return null;
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+
+    const allowedHosts = [
+      "paypal.me",
+      "www.paypal.me",
+    ];
+
+    if (!allowedHosts.includes(url.hostname.toLowerCase())) {
+      throw new Error(
+        "Please enter a valid PayPal.Me link, such as https://paypal.me/YourName",
+      );
+    }
+
+    return url.toString();
+  } catch {
+    throw new Error(
+      "Please enter a valid PayPal.Me link, such as https://paypal.me/YourName",
+    );
+  }
+}
 
     const { error } = await supabase
       .from("breeder_profiles")
@@ -96,3 +127,4 @@ form.addEventListener("submit", async (event) => {
     setButtonLoading(button, false);
   }
 });
+

@@ -874,3 +874,20 @@ a:focus-visible {
   outline-offset: 3px;
 }
 [hidden] { display: none !important; }
+.btn-paypal {
+  background: #0070ba;
+  border: 1px solid #0070ba;
+  color: #ffffff;
+}
+
+.btn-paypal:hover {
+  background: #003087;
+  border-color: #003087;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-paypal:focus-visible {
+  outline: 3px solid rgba(0, 112, 186, 0.3);
+  outline-offset: 3px;
+}
