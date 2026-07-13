@@ -27,3 +27,11 @@ Breeder account pages:
   edit-profile.html
   add-dog.html
   edit-dog.html
+
+PAYPAL PAYMENT FLOW UPDATE
+--------------------------
+The public demo confirmation/localStorage sold system has been removed.
+Live dog pages now use PayPal Checkout through Supabase Edge Functions.
+Run supabase/payment-flow-migration.sql and follow PAYPAL-SETUP.txt before enabling payments.
+A completed PayPal capture marks the dog Temporarily unavailable.
+Only the owning logged-in breeder can select Confirm Sold in the dashboard.

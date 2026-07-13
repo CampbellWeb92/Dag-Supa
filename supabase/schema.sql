@@ -94,6 +94,9 @@ create table if not exists public.dogs (
     check (approval_status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  paypal_order_id text,
+  paypal_capture_id text,
+  payment_received_at timestamptz,
   constraint dogs_breeder_id_fkey
     foreign key (breeder_id)
     references public.breeder_profiles(user_id)
@@ -103,6 +106,26 @@ create table if not exists public.dogs (
 -- =========================================================
 -- BUYER BIDS
 -- =========================================================
+
+-- =========================================================
+-- PAYPAL PAYMENTS
+-- Created and updated only by Supabase Edge Functions using the service role.
+-- =========================================================
+create table if not exists public.payments (
+  id uuid primary key default gen_random_uuid(),
+  dog_id uuid not null references public.dogs(id) on delete cascade,
+  breeder_id uuid not null references auth.users(id) on delete cascade,
+  paypal_order_id text not null unique,
+  paypal_capture_id text unique,
+  amount numeric(12,2) not null check (amount > 0),
+  currency text not null default 'ZAR',
+  status text not null default 'created'
+    check (status in ('created','approved','completed','cancelled','refunded','failed')),
+  buyer_email text,
+  created_at timestamptz not null default now(),
+  completed_at timestamptz
+);
+
 create table if not exists public.bids (
   id uuid primary key default gen_random_uuid(),
   dog_id uuid not null references public.dogs(id) on delete cascade,
@@ -123,6 +146,7 @@ create table if not exists public.bids (
 alter table public.breeder_profiles enable row level security;
 alter table public.dogs enable row level security;
 alter table public.bids enable row level security;
+alter table public.payments enable row level security;
 
 drop policy if exists "Public can view approved breeder profiles" on public.breeder_profiles;
 create policy "Public can view approved breeder profiles"
@@ -170,6 +194,13 @@ drop policy if exists "Breeders can delete own dogs" on public.dogs;
 create policy "Breeders can delete own dogs"
 on public.dogs
 for delete
+to authenticated
+using (auth.uid() = breeder_id);
+
+drop policy if exists "Breeders can view payments for own dogs" on public.payments;
+create policy "Breeders can view payments for own dogs"
+on public.payments
+for select
 to authenticated
 using (auth.uid() = breeder_id);
 

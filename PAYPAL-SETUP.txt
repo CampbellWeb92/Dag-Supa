@@ -1,0 +1,22 @@
+DAG PAYPAL SETUP
+================
+
+The website code is already connected to Supabase Edge Functions. Complete these steps once:
+
+1. Run supabase/payment-flow-migration.sql in Supabase > SQL Editor.
+2. Create a PayPal REST app in the PayPal Developer Dashboard.
+3. Put the public Client ID in assets/supabase-config.js.
+4. In Supabase Edge Function Secrets add:
+   PAYPAL_CLIENT_ID
+   PAYPAL_CLIENT_SECRET
+   PAYPAL_BASE_URL=https://api-m.paypal.com
+   Use https://api-m.sandbox.paypal.com while testing.
+5. Deploy both functions:
+   supabase functions deploy create-paypal-order --no-verify-jwt
+   supabase functions deploy capture-paypal-order --no-verify-jwt
+6. Upload the website files.
+
+IMPORTANT
+- Never place PAYPAL_CLIENT_SECRET or SUPABASE_SERVICE_ROLE_KEY in HTML or browser JavaScript.
+- This setup uses one platform PayPal REST account. PayPal.Me links cannot securely report completed payments back to Dag.
+- After capture, the dog becomes Temporarily unavailable. Only its authenticated breeder sees Confirm Sold.
