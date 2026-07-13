@@ -22,8 +22,9 @@
   if (!user) return;
   previewImage(imageInput, preview);
 
+  let breederProfile = null;
   try {
-    await ensureBreederProfile(user);
+    breederProfile = await ensureBreederProfile(user);
   } catch (error) {
     showMessage(message, `Your breeder profile is not ready: ${error.message}`, "error");
   }
@@ -34,7 +35,7 @@
     setButtonLoading(button, true, "Submitting…");
 
     try {
-      await ensureBreederProfile(user);
+      breederProfile = await ensureBreederProfile(user);
 
       const name = form.elements.name.value.trim();
       const breed = form.elements.breed.value.trim();
@@ -66,15 +67,23 @@
         bloodline: form.elements.bloodline.value.trim() || null,
         description,
         main_image_url: mainImageUrl,
-        approval_status: "pending",
+        // The database trigger is authoritative. This value keeps the UI and
+        // older Supabase projects consistent: approved breeders can publish
+        // immediately; unapproved breeders remain pending.
+        approval_status: String(breederProfile?.approval_status || "pending").toLowerCase() === "approved"
+          ? "approved"
+          : "pending",
       };
 
       const { error } = await client.from("dogs").insert(row);
       if (error) throw error;
 
+      const isApprovedBreeder = String(breederProfile?.approval_status || "").toLowerCase() === "approved";
       showMessage(
         message,
-        "Dog added successfully. It now appears in your dashboard while awaiting public approval.",
+        isApprovedBreeder
+          ? "Dog added successfully. It is now visible on your approved public breeder profile."
+          : "Dog added successfully. It appears in your dashboard while your breeder profile awaits approval.",
         "success",
       );
       window.setTimeout(() => window.location.assign("dashboard.html"), 700);

@@ -56,20 +56,42 @@
     return `${page}${window.location.search || ""}`;
   }
 
+  function revealPrivatePage() {
+    if (!document.body?.classList.contains("private-page")) return;
+    document.body.classList.remove("auth-pending");
+    document.body.classList.add("auth-ready");
+  }
+
+  function redirectToLogin(reason = "") {
+    const redirect = encodeURIComponent(currentPageWithQuery());
+    const suffix = reason ? `&reason=${encodeURIComponent(reason)}` : "";
+    window.location.replace(`login.html?redirect=${redirect}${suffix}`);
+  }
+
   async function requireUser() {
     if (!client) {
-      window.location.href = "login.html?setup=1";
+      window.location.replace("login.html?setup=1");
       return null;
     }
 
-    const { data: sessionData, error: sessionError } = await client.auth.getSession();
-    if (sessionError || !sessionData?.session?.user) {
-      const redirect = encodeURIComponent(currentPageWithQuery());
-      window.location.href = `login.html?redirect=${redirect}`;
+    try {
+      // getUser() validates the saved token with Supabase. Do not trust only
+      // getSession(), because a stale browser session can make private controls
+      // appear after the user is no longer authenticated.
+      const { data, error } = await client.auth.getUser();
+      if (error || !data?.user) {
+        await client.auth.signOut({ scope: "local" }).catch(() => {});
+        redirectToLogin("login-required");
+        return null;
+      }
+
+      revealPrivatePage();
+      return data.user;
+    } catch {
+      await client.auth.signOut({ scope: "local" }).catch(() => {});
+      redirectToLogin("session-error");
       return null;
     }
-
-    return sessionData.session.user;
   }
 
   async function ensureBreederProfile(user) {
@@ -182,10 +204,117 @@
       if (!["paypal.me", "www.paypal.me"].includes(url.hostname.toLowerCase())) {
         throw new Error();
       }
+      url.protocol = "https:";
       return url.toString();
     } catch {
       throw new Error("Please enter a valid PayPal.Me link, such as https://paypal.me/YourName");
     }
+  }
+
+  function navigationIsCurrent(href) {
+    return (window.location.pathname.split("/").pop() || "index.html") === href;
+  }
+
+  let navigationSyncVersion = 0;
+
+  function clearBreederNavigation() {
+    document
+      .querySelectorAll('[data-auth-generated="true"]')
+      .forEach((element) => element.remove());
+
+    document.querySelectorAll("[data-auth-footer-links]").forEach((container) => {
+      container.replaceChildren();
+      container.hidden = true;
+    });
+  }
+
+  async function getVerifiedBreeder() {
+    if (!client) return null;
+
+    const { data: userData, error: userError } = await client.auth.getUser();
+    const user = userData?.user || null;
+    if (userError || !user) {
+      await client.auth.signOut({ scope: "local" }).catch(() => {});
+      return null;
+    }
+
+    const { data: breeder, error: breederError } = await client
+      .from("breeder_profiles")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (breederError || !breeder) return null;
+    return { user, breeder };
+  }
+
+  function addBreederNavigation() {
+    const links = [
+      ["dashboard.html", "Dashboard"],
+      ["add-dog.html", "Add a Dog"],
+      ["edit-profile.html", "Edit Profile"],
+    ];
+
+    document.querySelectorAll(".site-nav").forEach((navigation) => {
+      links.forEach(([href, label]) => {
+        const anchor = document.createElement("a");
+        anchor.href = href;
+        anchor.textContent = label;
+        anchor.dataset.authGenerated = "true";
+        anchor.className = "auth-session-link";
+        if (navigationIsCurrent(href)) {
+          anchor.classList.add("active");
+          anchor.setAttribute("aria-current", "page");
+        }
+        navigation.append(anchor);
+      });
+
+      const logout = document.createElement("button");
+      logout.type = "button";
+      logout.className = "nav-logout auth-session-link";
+      logout.textContent = "Log Out";
+      logout.dataset.authGenerated = "true";
+      logout.addEventListener("click", async () => {
+        logout.disabled = true;
+        clearBreederNavigation();
+        document
+          .querySelectorAll('[data-public-auth="true"]')
+          .forEach((link) => { link.hidden = false; });
+
+        try {
+          await client.auth.signOut();
+        } finally {
+          window.location.replace("login.html");
+        }
+      });
+      navigation.append(logout);
+    });
+
+    document.querySelectorAll("[data-auth-footer-links]").forEach((container) => {
+      container.hidden = false;
+      container.innerHTML = `
+        <a data-auth-generated="true" href="dashboard.html">Breeder Dashboard</a>
+        <a data-auth-generated="true" href="add-dog.html">Add a Dog</a>
+        <a data-auth-generated="true" href="edit-profile.html">Edit Profile</a>`;
+    });
+  }
+
+  async function syncNavigationWithAuth() {
+    const syncVersion = ++navigationSyncVersion;
+    const publicLinks = document.querySelectorAll('[data-public-auth="true"]');
+
+    // Render the public menu first. The four breeder controls are created only
+    // after Supabase validates the current user and a breeder profile exists.
+    clearBreederNavigation();
+    publicLinks.forEach((link) => { link.hidden = false; });
+
+    if (!client) return;
+
+    const loggedInBreeder = await getVerifiedBreeder();
+    if (syncVersion !== navigationSyncVersion || !loggedInBreeder) return;
+
+    publicLinks.forEach((link) => { link.hidden = true; });
+    addBreederNavigation();
   }
 
   window.Dag = Object.freeze({
@@ -203,5 +332,12 @@
     previewImage,
     setButtonLoading,
     cleanPayPalUrl,
+    revealPrivatePage,
+    syncNavigationWithAuth,
+  });
+
+  syncNavigationWithAuth().catch(() => {});
+  client?.auth.onAuthStateChange(() => {
+    window.setTimeout(() => syncNavigationWithAuth().catch(() => {}), 0);
   });
 })();

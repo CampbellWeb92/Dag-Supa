@@ -1,0 +1,17 @@
+DAG PRIVATE BREEDER + LIVE PAYPAL FIX
+========================================
+
+1. In Supabase, open SQL Editor.
+2. Run the complete file: supabase/DATABASE-REPAIR.sql
+3. Upload the CONTENTS of the public folder to your web host, replacing old files.
+4. Clear your browser cache or refresh with Ctrl+F5.
+5. Log in as a breeder. Dashboard, Add a Dog and Edit Profile will only appear after login.
+6. In Edit Profile, save the breeder PayPal.Me link.
+7. Public visitors can open an approved breeder, then click Buy with PayPal on any approved available dog.
+
+IMPORTANT
+---------
+- Pending/unapproved breeders and dogs do not show public PayPal purchase controls.
+- Direct visits to dashboard.html, add-dog.html, edit-profile.html and edit-dog.html redirect public visitors to login.
+- For automatic temporary-unavailable status, deploy the PayPal Edge Functions and add PayPal credentials described in PAYPAL-SETUP.txt.
+- Without integrated PayPal credentials, the button opens the approved breeder's saved PayPal.Me link.

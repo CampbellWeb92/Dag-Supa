@@ -1,0 +1,32 @@
+DAG PRIVATE NAVIGATION + APPROVED BREEDER BUY/BID FIX
+=====================================================
+
+1. In Supabase, open SQL Editor.
+2. Run: supabase/DATABASE-REPAIR.sql
+3. Upload the CONTENTS of the public folder over the current website files.
+4. Replace old files rather than merging selected files.
+5. Refresh the website with Ctrl+F5 and log out before testing the public view.
+
+FIXED
+- Dashboard, Add a Dog, Edit Profile and Log Out are generated only after
+  Supabase validates the current user and confirms a breeder profile.
+- Stale local browser sessions are cleared and are not trusted for navigation.
+- Approved public dog cards show Place a Bid and Buy with PayPal.
+- Approved breeders' new dog listings become public immediately.
+- Existing pending listings owned by already approved breeders are repaired to
+  approved when DATABASE-REPAIR.sql is run.
+- Unapproved breeders' listings remain pending.
+- Rejected listings remain rejected.
+- The dog page loads the breeder profile separately, avoiding old database
+  foreign-key names that previously hid buyer controls.
+- PayPal.Me is used when marketplace PayPal credentials are not configured.
+
+PUBLIC BUYER RULES
+- Approved breeder + available dog: Place a Bid and Buy with PayPal.
+- Approved breeder + reserved dog: Place a Bid only.
+- Temporarily unavailable or sold dog: no bid or purchase action.
+
+TESTING NOTE
+A logged-in breeder viewing their own listing sees breeder management controls,
+not buyer controls. Log out or use an incognito/private window to test what the
+public sees.

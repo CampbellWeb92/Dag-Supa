@@ -10,8 +10,8 @@
   if (!isConfigured || !client) {
     if (warning) warning.hidden = false;
   } else {
-    const { data } = await client.auth.getSession();
-    if (data?.session?.user) {
+    const { data } = await client.auth.getUser();
+    if (data?.user) {
       window.location.replace("dashboard.html");
       return;
     }

@@ -1,33 +1,34 @@
-DAG FUNCTION TEST REPORT
+DAG AUTHENTICATION + LIVE PAYPAL TEST REPORT
+===============================================
 
-Checked and repaired:
-- All local HTML links, CSS files, images and JavaScript references
-- Mobile navigation toggle and footer links
-- Breeder registration form
-- Breeder login and persistent Supabase session
-- Forgot-password and update-password forms
-- Dashboard logout
-- Dashboard previous dog listings
-- My Breeder Profile link
-- Owner profile view including pending/rejected/sold listings
-- Add Dog form and database insert
-- Edit Dog form
-- Delete listing action
-- Confirm Sold and Make Available Again buttons
-- Public breeder profiles and dog links
-- Buyer bid form
-- PayPal button without page refresh
-- Contact email and phone links
-- Static sample breeder modals and buttons
+[PASS] dashboard.html hidden until auth
+[PASS] assets/pages/dashboard.js calls requireUser
+[PASS] add-dog.html hidden until auth
+[PASS] assets/pages/add-dog.js calls requireUser
+[PASS] edit-profile.html hidden until auth
+[PASS] assets/pages/edit-profile.js calls requireUser
+[PASS] edit-dog.html hidden until auth
+[PASS] assets/pages/edit-dog.js calls requireUser
+[PASS] All local HTML links/assets resolve
+[PASS] public deployment copy matches source HTML/assets
+[PASS] Approved live dog cards include Buy with PayPal
+[PASS] Live checkout requires approved breeder
+[PASS] Live checkout requires approved available dog
+[PASS] Only dashboard contains Confirm Sold control
+[PASS] Demo pages cannot mark sold
+[PASS] Management navigation generated only after a session
+[PASS] Public navigation contains no static management links
+[PASS] Private page redirects to login without session
+[PASS] RLS is enabled
+[PASS] Dog privileged fields protected by trigger
+[PASS] Breeder approval protected by trigger
+[PASS] Anonymous dog writes are not allowed
+[PASS] All JavaScript passes syntax checks
 
-Automated checks completed:
-- No missing local href/src files
-- No remaining browser ES-module imports
-- All JavaScript files pass syntax checks
-- Form field names match their JavaScript handlers
-- Mock Supabase tests passed for Add Dog, dashboard history and breeder profile history
+Result: 23/23 checks passed.
+Static code, link, privacy and deployment-copy checks all passed.
 
-External services still required:
-- Supabase project must be active
-- supabase/DATABASE-REPAIR.sql must be run once
-- PayPal Edge Functions and credentials are required for automatic payment capture
+Additional final checks:
+[PASS] SQL admin/service-role approvals remain possible.
+[PASS] Approved live breeder cards show PayPal availability when configured.
+[PASS] Approved available live dog cards route to checkout=1.

@@ -1,3 +1,37 @@
+
+/* Private breeder pages never render management controls until authentication succeeds. */
+body.private-page.auth-pending {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+body.private-page.auth-pending > * {
+  visibility: hidden !important;
+}
+
+body.private-page.auth-pending::before {
+  content: "Checking breeder login…";
+  visibility: visible;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: #f4f8fb;
+  color: #123a5a;
+  font: 700 1rem/1.5 Arial, sans-serif;
+}
+
+body.private-page.auth-ready {
+  overflow: auto;
+}
+
+.auth-session-link[hidden],
+.auth-public-link[hidden] {
+  display: none !important;
+}
+
 .auth-shell {
   width: min(980px, 92%);
   margin: 42px auto;
@@ -271,3 +305,8 @@
 }
 
 .payment-note{margin-top:1rem;font-size:.92rem;opacity:.8}.payment-section[hidden]{display:none!important}#paypalButtonContainer{max-width:520px;margin:1rem auto}
+
+/* Breeder navigation is opt-in: its empty placeholders remain hidden. */
+[data-auth-footer-links][hidden] {
+  display: none !important;
+}

@@ -2,11 +2,12 @@
 
 (async function initialiseDogListing() {
   const { client, escapeHtml, formatDate, isConfigured, money, showMessage } = window.Dag;
-  const id = new URLSearchParams(window.location.search).get("id");
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
   const message = document.querySelector("#message");
   const content = document.querySelector("#dogContent");
   const bidForm = document.querySelector("#bidForm");
-  const bidSection = document.querySelector(".bid-section");
+  const bidSection = document.querySelector("#bidOffer");
   const paypalSection = document.querySelector("#paypalCheckout");
   const paypalContainer = document.querySelector("#paypalButtonContainer");
   const paypalMessage = document.querySelector("#paypalMessage");
@@ -22,36 +23,61 @@
     return;
   }
 
-  const { data: sessionData } = await client.auth.getSession();
-  const currentUserId = sessionData?.session?.user?.id || null;
+  // Validate the session with Supabase so a stale local token cannot make a
+  // public visitor look like the listing owner.
+  const { data: userData } = await client.auth.getUser();
+  const currentUserId = userData?.user?.id || null;
 
-  const { data: dog, error } = await client
+  // Load the dog and breeder separately. This avoids relying on a specific
+  // generated foreign-key relationship name, which differed between older
+  // Dag database versions and caused the buyer controls to disappear.
+  const { data: dog, error: dogError } = await client
     .from("dogs")
-    .select("*, breeder_profiles!dogs_breeder_id_fkey(business_name,phone,whatsapp,paypal_me_url,town,province,approval_status)")
+    .select("*")
     .eq("id", id)
     .maybeSingle();
 
-  if (error || !dog) {
-    showMessage(message, error?.message || "This dog listing could not be found.", "error");
+  if (dogError || !dog) {
+    showMessage(message, dogError?.message || "This dog listing could not be found.", "error");
     content.innerHTML = '<div class="empty-state">The listing is unavailable or you do not have permission to view it.</div>';
     return;
   }
 
-  currentDog = dog;
-  const breeder = dog.breeder_profiles || {};
   const isOwner = currentUserId === dog.breeder_id;
-  const whatsapp = (breeder.whatsapp || breeder.phone || "").replace(/\D/g, "");
-  const canBuy = !isOwner && dog.status === "available" && dog.approval_status === "approved";
-  const canBid = !isOwner && ["available", "reserved"].includes(dog.status) && dog.approval_status === "approved";
+  let breederQuery = client.from("breeder_profiles").select("*").eq("user_id", dog.breeder_id);
+  if (!isOwner) breederQuery = breederQuery.eq("approval_status", "approved");
+  const { data: breeder, error: breederError } = await breederQuery.maybeSingle();
 
-  document.querySelector("#pageTitle").textContent = dog.name;
-  document.querySelector("#pageSubtitle").textContent = [dog.breed, [breeder.town, breeder.province].filter(Boolean).join(", ")].filter(Boolean).join(" · ");
+  if (breederError || !breeder) {
+    showMessage(
+      message,
+      breederError?.message || "The approved breeder profile for this listing could not be loaded.",
+      "error",
+    );
+    content.innerHTML = '<div class="empty-state">The breeder profile is not publicly available.</div>';
+    return;
+  }
+
+  currentDog = dog;
+  const dogStatus = normalise(dog.status) || "available";
+  const dogApproval = normalise(dog.approval_status) || "pending";
+  const breederApproval = normalise(breeder.approval_status) || "pending";
+  const listingIsPublic = dogApproval === "approved" && breederApproval === "approved";
+  const whatsapp = (breeder.whatsapp || breeder.phone || "").replace(/\D/g, "");
+  const canBuy = !isOwner && listingIsPublic && dogStatus === "available";
+  const canBid = !isOwner && listingIsPublic && ["available", "reserved"].includes(dogStatus);
+
+  document.querySelector("#pageTitle").textContent = dog.name || "Dog Listing";
+  document.querySelector("#pageSubtitle").textContent = [
+    dog.breed,
+    [breeder.town, breeder.province].filter(Boolean).join(", "),
+  ].filter(Boolean).join(" · ");
 
   content.innerHTML = `
     <div><img src="${escapeHtml(dog.main_image_url || "assets/hero.jpg")}" alt="${escapeHtml(dog.name)}" /></div>
     <div>
-      <span class="status-pill">${escapeHtml(statusLabel(dog.status))}</span>
-      ${isOwner ? `<span class="status-pill">Approval: ${escapeHtml(dog.approval_status || "pending")}</span>` : ""}
+      <span class="status-pill">${escapeHtml(statusLabel(dogStatus))}</span>
+      ${isOwner ? `<span class="status-pill">Approval: ${escapeHtml(dogApproval)}</span>` : ""}
       <h2>${escapeHtml(dog.name)}</h2>
       <h3>${money(dog.price)}</h3>
       <div class="detail-list">
@@ -70,37 +96,61 @@
         ${isOwner ? `<a class="btn btn-primary" href="edit-dog.html?id=${encodeURIComponent(dog.id)}">Edit Listing</a><a class="btn btn-outline" href="dashboard.html">Dashboard</a>` : ""}
         ${!isOwner && breeder.phone ? `<a class="btn btn-primary" href="tel:${escapeHtml(breeder.phone)}">Call Breeder</a>` : ""}
         ${!isOwner && whatsapp ? `<a class="btn btn-green" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+        ${canBid ? '<button class="btn btn-outline" type="button" id="openBidForm">Place a Bid</button>' : ""}
         ${canBuy ? '<button class="btn btn-paypal" type="button" id="openPayPalCheckout">Buy with PayPal</button>' : ""}
       </div>
-      ${dog.status === "unavailable" ? '<p class="form-message show info">Payment is being checked by the breeder. This dog is temporarily unavailable.</p>' : ""}
-      ${dog.status === "sold" ? '<p class="form-message show success">This dog has been sold.</p>' : ""}
-      ${dog.status === "reserved" ? '<p class="form-message show info">This dog is currently reserved. Contact the breeder for details.</p>' : ""}
+      ${isOwner && listingIsPublic && dogStatus === "available" ? '<p class="form-message show info">This is your breeder view. Log out or use a private/incognito window to see the public Place a Bid and Buy with PayPal controls.</p>' : ""}
+      ${dogStatus === "unavailable" ? '<p class="form-message show info">Payment is being checked by the breeder. This dog is temporarily unavailable.</p>' : ""}
+      ${dogStatus === "sold" ? '<p class="form-message show success">This dog has been sold.</p>' : ""}
+      ${dogStatus === "reserved" ? '<p class="form-message show info">This dog is currently reserved. Buyers may still send a bid or contact the breeder.</p>' : ""}
+      ${!isOwner && !listingIsPublic ? '<p class="form-message show info">Buyer actions are available only after both the breeder and dog listing are approved.</p>' : ""}
     </div>`;
 
-  if (!canBid) {
-    bidSection.hidden = true;
-  } else {
+  if (canBid) {
+    bidSection.hidden = false;
     bidForm.elements.dog_id.value = dog.id;
     bidForm.elements.breeder_id.value = dog.breeder_id;
     bidForm.elements.amount.value = dog.price;
+
+    document.querySelector("#openBidForm")?.addEventListener("click", (event) => {
+      event.preventDefault();
+      bidSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      bidForm.elements.buyer_name?.focus({ preventScroll: true });
+    });
+
+    if (params.get("bid") === "1" || window.location.hash === "#bidOffer") {
+      window.setTimeout(() => bidSection.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+    }
+  } else {
+    bidSection.hidden = true;
   }
 
   if (canBuy) {
-    const openButton = document.querySelector("#openPayPalCheckout");
-    openButton?.addEventListener("click", async (event) => {
-      event.preventDefault();
+    const openCheckout = async () => {
       paypalSection.hidden = false;
       paypalSection.scrollIntoView({ behavior: "smooth", block: "start" });
       if (!paypalContainer.dataset.initialised) {
         paypalContainer.dataset.initialised = "true";
         await setupPayPal(dog, breeder);
       }
+    };
+
+    document.querySelector("#openPayPalCheckout")?.addEventListener("click", async (event) => {
+      event.preventDefault();
+      await openCheckout();
     });
+
+    if (params.get("checkout") === "1" || window.location.hash === "#paypalCheckout") {
+      window.setTimeout(() => openCheckout(), 0);
+    }
+  } else {
+    paypalSection.hidden = true;
   }
 
   bidForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!currentDog || !canBid) return;
+
     const bidMessage = document.querySelector("#bidMessage");
     const button = bidForm.querySelector('button[type="submit"]');
     button.disabled = true;
@@ -127,6 +177,7 @@
       showMessage(bidMessage, bidError.message, "error");
       return;
     }
+
     bidForm.reset();
     bidForm.elements.dog_id.value = dog.id;
     bidForm.elements.breeder_id.value = dog.breeder_id;
@@ -135,19 +186,32 @@
   });
 
   async function setupPayPal(listing, breederProfile) {
-    const clientId = String(window.DAG_PAYPAL_CLIENT_ID || "");
+    const clientId = String(window.DAG_PAYPAL_CLIENT_ID || "").trim();
     paypalSummary.textContent = `Pay ${money(listing.price)} securely with PayPal.`;
+    paypalContainer.replaceChildren();
 
+    // When the marketplace checkout is not configured, use the approved
+    // breeder's saved public PayPal.Me URL instead of removing the buy option.
     if (!clientId || /REPLACE_|YOUR-/i.test(clientId)) {
       if (breederProfile.paypal_me_url) {
-        paypalContainer.innerHTML = `<a class="btn btn-paypal" target="_blank" rel="noopener" href="${escapeHtml(breederProfile.paypal_me_url)}">Buy with PayPal</a>`;
+        const link = document.createElement("a");
+        link.className = "btn btn-paypal";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.href = breederProfile.paypal_me_url;
+        link.textContent = "Buy with PayPal";
+        paypalContainer.append(link);
         showMessage(
           paypalMessage,
-          "This opens the breeder’s PayPal.Me page. Automatic temporary-unavailable status requires the secure PayPal setup in PAYPAL-SETUP.txt.",
+          "You are opening this approved breeder’s PayPal.Me page. The breeder must confirm receipt before marking the dog sold.",
           "info",
         );
       } else {
-        showMessage(paypalMessage, "This breeder has not connected PayPal yet.", "info");
+        showMessage(
+          paypalMessage,
+          "This approved breeder has not saved a PayPal.Me link yet. Please contact the breeder or place a bid.",
+          "info",
+        );
       }
       return;
     }
@@ -176,12 +240,20 @@
           if (captureError || !data?.success) {
             throw new Error(data?.error || captureError?.message || "PayPal payment could not be confirmed.");
           }
-          showMessage(paypalMessage, "Payment confirmed. This dog is temporarily unavailable while the breeder confirms receipt.", "success");
-          paypalContainer.innerHTML = "";
+          showMessage(
+            paypalMessage,
+            "Payment confirmed. This dog is temporarily unavailable while the breeder confirms receipt.",
+            "success",
+          );
+          paypalContainer.replaceChildren();
           window.setTimeout(() => window.location.reload(), 1400);
         },
         onCancel: () => showMessage(paypalMessage, "Payment was cancelled. The dog remains available.", "info"),
-        onError: (paypalError) => showMessage(paypalMessage, paypalError?.message || "PayPal checkout could not be completed.", "error"),
+        onError: (paypalError) => showMessage(
+          paypalMessage,
+          paypalError?.message || "PayPal checkout could not be completed.",
+          "error",
+        ),
       }).render(paypalContainer);
     } catch (paypalError) {
       showMessage(paypalMessage, paypalError.message, "error");
@@ -198,6 +270,7 @@
         existing.addEventListener("error", () => reject(new Error("PayPal SDK failed to load.")), { once: true });
         return;
       }
+
       const script = document.createElement("script");
       script.dataset.dagPaypalSdk = "true";
       script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=ZAR&intent=capture`;
@@ -208,6 +281,10 @@
       script.onerror = () => reject(new Error("PayPal SDK failed to load."));
       document.head.appendChild(script);
     });
+  }
+
+  function normalise(value) {
+    return String(value || "").trim().toLowerCase();
   }
 
   function statusLabel(status = "available") {

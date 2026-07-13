@@ -171,9 +171,6 @@
       .from("dogs")
       .update({
         status: "available",
-        paypal_order_id: null,
-        paypal_capture_id: null,
-        payment_received_at: null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)

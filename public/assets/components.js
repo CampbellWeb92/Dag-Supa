@@ -24,10 +24,16 @@ const DOG_LOGO = `
 
 function createNavigation(activePage) {
   return NAVIGATION_LINKS.map(({ page, href, label }) => {
-    const activeAttributes =
-      activePage === page ? ' class="active" aria-current="page"' : "";
 
-    return `<a href="${href}"${activeAttributes}>${label}</a>`;
+    const authClass = ["register", "login"].includes(page) ? " auth-public-link" : "";
+    const authAttribute = ["register", "login"].includes(page) ? ' data-public-auth="true"' : "";
+    const classAttribute = activePage === page
+      ? ` class="active${authClass}"`
+      : authClass
+        ? ` class="${authClass.trim()}"`
+        : "";
+    const currentAttribute = activePage === page ? ' aria-current="page"' : "";
+    return `<a href="${href}"${classAttribute}${currentAttribute}${authAttribute}>${label}</a>`;
   }).join("");
 }
 
@@ -87,8 +93,9 @@ function renderLayout(activePage = "") {
 
           <div>
             <h3>Breeders</h3>
-            <a href="register.html">Register as a Breeder</a>
-            <a href="login.html">Breeder Login</a>
+            <a class="auth-public-link" data-public-auth="true" href="register.html">Register as a Breeder</a>
+            <a class="auth-public-link" data-public-auth="true" href="login.html">Breeder Login</a>
+            <div data-auth-footer-links hidden></div>
           </div>
         </div>
 

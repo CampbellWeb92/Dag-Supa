@@ -906,3 +906,18 @@ a:focus-visible {
   outline: 3px solid rgba(0, 112, 186, 0.3);
   outline-offset: 3px;
 }
+
+.site-nav .nav-logout {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.45rem 0.15rem;
+}
+
+.site-nav .nav-logout:hover,
+.site-nav .nav-logout:focus-visible {
+  color: var(--green, #28a96b);
+}

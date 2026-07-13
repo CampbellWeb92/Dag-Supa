@@ -1,0 +1,16 @@
+DAG BREEDER NAVIGATION FIX
+
+The following links are now added only after Supabase confirms:
+1. A valid logged-in session; and
+2. A matching breeder_profiles record for that user.
+
+Private links:
+- Dashboard
+- Add a Dog
+- Edit Profile
+- Log Out
+
+Logged-out public visitors see only the public navigation, including Register as Breeder and Breeder Login.
+
+UPLOAD
+Upload the contents of the public folder and replace the old files. Then refresh the site with Ctrl + F5.
